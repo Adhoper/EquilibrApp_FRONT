@@ -1,0 +1,119 @@
+<header
+  class="h-16 shrink-0 sticky top-0 z-10 bg-slate-800/95 backdrop-blur border-b border-emerald-500/70"
+>
+  <div class="h-full px-4 md:px-6 flex items-center justify-between gap-4">
+    <!-- Hamburguesa (solo móvil) -->
+    <button
+      type="button"
+      class="md:hidden rounded-md p-2 hover:bg-slate-700 text-white cursor-pointer"
+      aria-label="Abrir menú"
+      (click)="toggleSidebar()"
+    >
+      <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h12"
+        />
+      </svg>
+    </button>
+
+    <!-- Izquierda: marca (si quieres mostrarla) -->
+    <div class="hidden md:flex items-center gap-2 text-emerald-400">
+      <span class="font-extrabold tracking-wide">EA</span>
+      <!-- <span class="text-slate-100 font-medium">EquilibrApp</span> -->
+    </div>
+
+    <!-- Espaciador -->
+    <div class="flex-1"></div>
+
+    <!-- Acciones derechas -->
+    <div class="flex items-center gap-2">
+
+      <!-- Menú de usuario -->
+      <div class="relative">
+        <button
+          type="button"
+          class="flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-full bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 cursor-pointer"
+          (click)="onToggleMenu($event)"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="menuOpen"
+        >
+          <div
+            class="h-8 w-8 rounded-full grid place-items-center bg-emerald-100 text-emerald-700 text-sm font-semibold"
+          >
+            {{ initials(userName) || 'EA' }}
+          </div>
+          <div class="hidden sm:flex flex-col items-start leading-tight">
+            <span class="text-sm font-medium text-slate-900">{{ userName }}</span>
+            <span class="text-xs text-slate-500 truncate max-w-[160px]">{{ userEmail }}</span>
+          </div>
+          <svg
+            class="h-4 w-4 text-slate-500 hidden sm:block"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+
+        <!-- Dropdown -->
+        <div
+          *ngIf="menuOpen"
+          class="absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-lg ring-1 ring-black/5 overflow-hidden"
+          (click)="$event.stopPropagation()"
+          role="menu"
+        >
+          <div class="px-4 py-3 border-b border-slate-100">
+            <p class="text-sm font-medium text-slate-900 truncate">{{ userName }}</p>
+            <p class="text-xs text-slate-500 truncate">{{ userEmail }}</p>
+          </div>
+
+          <button
+            type="button"
+            class="w-full flex items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-slate-50 text-slate-700 cursor-pointer"
+            (click)="menuOpen = false"
+            role="menuitem"
+          >
+            <svg
+              class="h-4 w-4 text-slate-500"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5.12 5.12a9 9 0 1012.73 12.73M15 9l-6 6"
+              />
+            </svg>
+            Perfil (próximamente)
+          </button>
+
+          <button
+            type="button"
+            class="w-full flex items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-red-50 text-red-600 cursor-pointer"
+            (click)="logout()"
+            role="menuitem"
+          >
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 11-4 0v-1m4-8V7a2 2 0 10-4 0v1"
+              />
+            </svg>
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
