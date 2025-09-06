@@ -28,6 +28,10 @@ export const routes: Routes = [
         path: 'categorias',
         loadComponent: () => import('./pages/categorias/categorias').then((c) => c.Categorias)
       },
+      {
+        path: 'transacciones',
+        loadComponent: () => import('./pages/transacciones/transacciones').then((c) => c.Transacciones)
+      },
       { path: '**', redirectTo: 'dashboard' },
     ],
   },

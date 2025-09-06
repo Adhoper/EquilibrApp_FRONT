@@ -1,6 +1,6 @@
-import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
-import { LoaderService } from "../../services/loader.service";
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { LoaderService } from '../../services/loader.service';
 
 @Component({
   selector: 'app-loader',
@@ -8,19 +8,33 @@ import { LoaderService } from "../../services/loader.service";
   imports: [CommonModule],
   template: `
     <!-- loader.component.html inline -->
-@if (isLoading$ | async) {
-  <div class="fixed inset-0 flex items-center justify-center z-[10000] bg-black/5" style="pointer-events: all">
-    <div class="flex flex-col items-center pointer-events-none">
-      <div class="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent mb-2"></div>
-      <span class="text-sm text-blue-700 font-medium">Cargando...</span>
+    @if (isLoading$ | async) {
+    <div
+      class="fixed inset-0 z-[10000] grid place-items-center bg-slate-900/10"
+      style="pointer-events: all"
+    >
+      <div
+        class="flex flex-col items-center gap-3 pointer-events-none"
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+      >
+        <div class="relative">
+          <div
+            class="h-12 w-12 rounded-full border-4 border-emerald-400/30 border-t-emerald-500 motion-safe:animate-spin"
+          ></div>
+          <div class="absolute inset-0 grid place-items-center">
+            <span class="text-xs font-extrabold text-emerald-500 tracking-wider">EA</span>
+          </div>
+        </div>
+        <span class="text-sm text-slate-800">
+          Cargando <span class="text-emerald-600 font-semibold">EquilibrApp</span>…
+        </span>
+      </div>
     </div>
-  </div>
-}
-
-
-  `
+    }
+  `,
 })
-
 export class Loader implements OnInit {
   isLoading$: any;
 
@@ -30,5 +44,3 @@ export class Loader implements OnInit {
     this.isLoading$ = this.loaderService.loading$;
   }
 }
-
-  

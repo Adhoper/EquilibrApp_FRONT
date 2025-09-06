@@ -1,1 +1,145 @@
-<p>transacciones works!</p>
+<!-- src/app/pages/transacciones/transacciones.html -->
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h2 class="text-xl font-semibold text-slate-100">{{ titulo() }}</h2>
+    <a routerLink="/dashboard" class="text-sm text-emerald-400 hover:underline cursor-pointer">Volver al dashboard</a>
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Form -->
+    <div class="lg:col-span-2 rounded-2xl bg-slate-900/60 p-5 border border-white/10">
+      <div class="flex items-center gap-2 mb-4">
+        <button type="button"
+                (click)="f.tipoTransaccion.setValue(0)"
+                class="px-3 py-1.5 rounded-lg border cursor-pointer"
+                [ngClass]="f.tipoTransaccion.value===0 ? 'bg-rose-600 text-white border-rose-600' : 'bg-slate-800 text-slate-200 hover:bg-slate-700 border-white/10'">
+          Gasto
+        </button>
+        <button type="button"
+                (click)="f.tipoTransaccion.setValue(1)"
+                class="px-3 py-1.5 rounded-lg border cursor-pointer"
+                [ngClass]="f.tipoTransaccion.value===1 ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-800 text-slate-200 hover:bg-slate-700 border-white/10'">
+          Ingreso
+        </button>
+      </div>
+
+      <!-- form -->
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="grid sm:grid-cols-2 gap-4" novalidate>
+        <!-- Monto -->
+        <div>
+          <label class="block text-sm text-slate-300 mb-1">Monto *</label>
+          <input type="number" inputmode="decimal" step="0.01" min="0.01" placeholder="0.00"
+                 class="w-full rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-400 text-slate-100 placeholder-slate-500"
+                 [class.border-red-400]="invalid('monto')"
+                 formControlName="monto">
+          @if (invalid('monto')) { <p class="mt-1 text-xs text-rose-400">Ingresa un monto válido (≥ 0.01).</p> }
+        </div>
+
+        <!-- Fecha -->
+        <div>
+          <label class="block text-sm text-slate-300 mb-1">Fecha *</label>
+          <input type="date"
+                 class="w-full rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-400 text-slate-100"
+                 [class.border-red-400]="invalid('fechaTransaccion')"
+                 formControlName="fechaTransaccion">
+          @if (invalid('fechaTransaccion')) { <p class="mt-1 text-xs text-rose-400">Selecciona una fecha.</p> }
+        </div>
+
+        <!-- Cuenta -->
+        <div>
+          <label class="block text-sm text-slate-300 mb-1">Cuenta *</label>
+          <select
+            class="w-full rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-400 text-slate-100 cursor-pointer"
+            [class.border-red-400]="invalid('idCuenta')"
+            formControlName="idCuenta">
+            <option [ngValue]="null" disabled>Selecciona una cuenta</option>
+            @for (c of cuentas(); track c.id) {
+              <option class="bg-slate-900 text-slate-100" [ngValue]="c.id">{{ c.nombre }}</option>
+            }
+          </select>
+          @if (invalid('idCuenta')) { <p class="mt-1 text-xs text-rose-400">Selecciona una cuenta.</p> }
+        </div>
+
+        <!-- Categoría -->
+        <div>
+          <label class="block text-sm text-slate-300 mb-1">Categoría *</label>
+          <select
+            class="w-full rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-400 text-slate-100 cursor-pointer"
+            [class.border-red-400]="invalid('idCategoria')"
+            formControlName="idCategoria">
+            <option [ngValue]="null" disabled>Selecciona una categoría</option>
+            @for (c of categorias(); track c.id) {
+              <option class="bg-slate-900 text-slate-100" [ngValue]="c.id">{{ c.nombre }}</option>
+            }
+          </select>
+          @if (invalid('idCategoria')) { <p class="mt-1 text-xs text-rose-400">Selecciona una categoría.</p> }
+        </div>
+
+        <!-- Nota -->
+        <div class="sm:col-span-2">
+          <label class="block text-sm text-slate-300 mb-1">Nota (opcional)</label>
+          <input type="text" placeholder="Ej. Almuerzo, peaje, gasolina…"
+                 class="w-full rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-400 text-slate-100 placeholder-slate-500"
+                 formControlName="nota">
+        </div>
+
+        <!-- Botones -->
+        <div class="sm:col-span-2 flex items-center justify-end gap-2 mt-2">
+          <button type="button" class="px-4 py-2 rounded-lg border border-white/10 bg-slate-800 text-slate-200 hover:bg-slate-700 cursor-pointer"
+                  (click)="resetForm()" [disabled]="cargando()">
+            Limpiar
+          </button>
+          <button type="submit"
+                  class="px-4 py-2 rounded-lg text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  [ngClass]="isIngreso() ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-rose-600 hover:bg-rose-700'"
+                  [disabled]="cargando()">
+            {{ cargando() ? 'Guardando…' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Recientes -->
+    <div class="rounded-2xl bg-slate-900/60 p-5 border border-white/10">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold text-slate-100">Últimas transacciones</h3>
+        <a routerLink="/transacciones" class="text-sm text-emerald-400 hover:underline cursor-pointer">Ver todas</a>
+      </div>
+
+      <div class="mt-3 divide-y divide-white/5">
+        @if (!recientes().length) {
+          <div class="text-sm text-slate-400">Sin transacciones recientes.</div>
+        } @else {
+          @for (t of recientes(); track t.idTransaccion) {
+            <div class="py-3 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="h-8 w-8 rounded-full grid place-items-center"
+                     [ngClass]="{
+                       'bg-emerald-200/20 text-emerald-400': t.tipoTransaccion === 1,
+                       'bg-rose-200/20 text-rose-400': t.tipoTransaccion === 0
+                     }">
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path *ngIf="t.tipoTransaccion === 1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+                    <path *ngIf="t.tipoTransaccion === 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m7 7l-7-7 7-7"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-slate-100">{{ t.categoria }}</div>
+                  <div class="text-xs text-slate-400">
+                    {{ t.cuenta }} · {{ t.fechaTransaccion | date:'mediumDate' }}
+                    @if (t.nota) { · <span class="italic">{{ t.nota }}</span> }
+                  </div>
+                </div>
+              </div>
+              <div class="text-sm font-semibold"
+                   [class.text-emerald-400]="t.tipoTransaccion === 1"
+                   [class.text-rose-400]="t.tipoTransaccion === 0">
+                {{ (t.tipoTransaccion === 1 ? '+' : '-') }}{{ t.monto | currency:'DOP':'symbol':'1.0-0' }}
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+</div>
