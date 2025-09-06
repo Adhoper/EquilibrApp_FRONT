@@ -1,118 +1,143 @@
-<header
-  class="h-16 shrink-0 sticky top-0 z-10 bg-slate-800/95 backdrop-blur border-b border-emerald-500/70"
->
+<header class="h-16 shrink-0 sticky top-0 z-30 bg-slate-950/70 backdrop-blur border-b border-emerald-500/40">
   <div class="h-full px-4 md:px-6 flex items-center justify-between gap-4">
     <!-- Hamburguesa (solo móvil) -->
     <button
       type="button"
-      class="md:hidden rounded-md p-2 hover:bg-slate-700 text-white cursor-pointer"
+      class="md:hidden rounded-md p-2 bg-slate-800 text-slate-200 hover:bg-slate-700 border border-white/10 cursor-pointer"
       aria-label="Abrir menú"
-      (click)="toggleSidebar()"
-    >
+      (click)="toggleSidebar()">
       <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M4 6h16M4 12h16M4 18h12"
-        />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h12"/>
       </svg>
     </button>
 
-    <!-- Izquierda: marca (si quieres mostrarla) -->
+    <!-- Izquierda: marca -->
     <div class="hidden md:flex items-center gap-2 text-emerald-400">
       <span class="font-extrabold tracking-wide">EA</span>
       <!-- <span class="text-slate-100 font-medium">EquilibrApp</span> -->
     </div>
 
-    <!-- Espaciador -->
     <div class="flex-1"></div>
 
     <!-- Acciones derechas -->
     <div class="flex items-center gap-2">
+      <!-- Campana de notificaciones -->
+      <div class="relative" [class.hidden]="!showBell">
+        <button type="button"
+          class="relative p-2 rounded-full bg-slate-800 text-slate-200 hover:bg-slate-700 border border-white/10 cursor-pointer"
+          aria-label="Notificaciones"
+          (click)="onToggleNotif($event)">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 00-4-5.7V5a2 2 0 10-4 0v.3C7.7 6.2 6 8.4 6 11v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1"/>
+          </svg>
+          @if (unreadCount() > 0) {
+            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full">
+              {{ unreadCount() }}
+            </span>
+          }
+        </button>
+
+        @if (notifOpen) {
+          <div
+            class="absolute right-0 mt-2 w-80 max-w-[92vw] rounded-xl bg-slate-950/95 text-slate-100 shadow-xl ring-1 ring-white/10 overflow-hidden z-50"
+            (click)="$event.stopPropagation()" role="menu">
+            <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+              <div class="font-medium">Notificaciones</div>
+              <button type="button" class="text-xs text-emerald-400 hover:underline cursor-pointer"
+                      (click)="marcarTodas()">Marcar todas</button>
+            </div>
+            <div class="max-h-[60vh] overflow-y-auto">
+              @if (!alertas().length) {
+                <div class="px-4 py-6 text-sm text-slate-400">No hay notificaciones.</div>
+              } @else {
+                @for (a of alertas(); track a.idAlerta) {
+                  <div class="px-4 py-3 border-b last:border-0 flex items-start gap-3 border-white/5"
+                       [ngClass]="{ 'bg-emerald-500/10': a.estado==='N' }">
+                    <div class="h-8 w-8 rounded-full grid place-items-center"
+                         [ngClass]="{
+                           'bg-amber-200/20 text-amber-400': a.umbral===75,
+                           'bg-orange-200/20 text-orange-400': a.umbral===90,
+                           'bg-red-200/20 text-red-400': a.umbral>=100
+                         }">
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 9v4m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+                      </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="text-sm">
+                        @if (a.tipo === 'C') { <b class="text-slate-100">{{ a.categoria || 'Categoría' }}</b> alcanzó {{ a.umbral }}% }
+                        @else { <b class="text-slate-100">Presupuesto global</b> alcanzó {{ a.umbral }}% }
+                      </div>
+                      <div class="text-xs text-slate-400 mt-0.5">Uso actual: {{ a.porcentaje | number:'1.0-0' }}%</div>
+                    </div>
+                    <div class="flex flex-col items-end gap-1">
+                      @if (a.estado === 'N') {
+                        <button type="button" class="text-xs text-emerald-400 hover:underline cursor-pointer"
+                                (click)="marcarLeida(a)">Marcar leída</button>
+                      }
+                      <button type="button" class="text-xs text-slate-400 hover:text-red-400 cursor-pointer"
+                              (click)="descartar(a)">Descartar</button>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
 
       <!-- Menú de usuario -->
       <div class="relative">
         <button
           type="button"
-          class="flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-full bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 cursor-pointer"
-          (click)="onToggleMenu($event)"
-          aria-haspopup="menu"
-          [attr.aria-expanded]="menuOpen"
-        >
-          <div
-            class="h-8 w-8 rounded-full grid place-items-center bg-emerald-100 text-emerald-700 text-sm font-semibold"
-          >
+          class="flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-full bg-slate-800 text-slate-200 hover:bg-slate-700 border border-white/10 cursor-pointer"
+          (click)="onToggleMenu($event)" aria-haspopup="menu" [attr.aria-expanded]="menuOpen">
+          <div class="h-8 w-8 rounded-full grid place-items-center bg-emerald-300/20 text-emerald-400 text-sm font-semibold">
             {{ initials(userName) || 'EA' }}
           </div>
           <div class="hidden sm:flex flex-col items-start leading-tight">
-            <span class="text-sm font-medium text-slate-900">{{ userName }}</span>
-            <span class="text-xs text-slate-500 truncate max-w-[160px]">{{ userEmail }}</span>
+            <span class="text-sm font-medium text-slate-100">{{ userName }}</span>
+            <span class="text-xs text-slate-400 truncate max-w-[160px]">{{ userEmail }}</span>
           </div>
-          <svg
-            class="h-4 w-4 text-slate-500 hidden sm:block"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z"
-              clip-rule="evenodd"
-            />
+          <svg class="h-4 w-4 text-slate-400 hidden sm:block" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z"
+                  clip-rule="evenodd"/>
           </svg>
         </button>
 
-        <!-- Dropdown -->
-        <div
-          *ngIf="menuOpen"
-          class="absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-lg ring-1 ring-black/5 overflow-hidden"
-          (click)="$event.stopPropagation()"
-          role="menu"
-        >
-          <div class="px-4 py-3 border-b border-slate-100">
-            <p class="text-sm font-medium text-slate-900 truncate">{{ userName }}</p>
-            <p class="text-xs text-slate-500 truncate">{{ userEmail }}</p>
+        @if (menuOpen) {
+          <div
+            class="absolute right-0 mt-2 w-56 rounded-xl bg-slate-950/95 text-slate-100 shadow-xl ring-1 ring-white/10 overflow-hidden"
+            (click)="$event.stopPropagation()" role="menu">
+            <div class="px-4 py-3 border-b border-white/10">
+              <p class="text-sm font-medium truncate">{{ userName }}</p>
+              <p class="text-xs text-slate-400 truncate">{{ userEmail }}</p>
+            </div>
+
+            <button type="button"
+              class="w-full flex items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-slate-900 text-slate-200 cursor-pointer"
+              (click)="menuOpen = false" role="menuitem">
+              <svg class="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M5.12 5.12a9 9 0 1012.73 12.73M15 9l-6 6"/>
+              </svg>
+              Perfil (próximamente)
+            </button>
+
+            <button type="button"
+              class="w-full flex items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-rose-500/10 text-rose-400 cursor-pointer"
+              (click)="logout()" role="menuitem">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 11-4 0v-1m4-8V7a2 2 0 10-4 0v1"/>
+              </svg>
+              Cerrar sesión
+            </button>
           </div>
-
-          <button
-            type="button"
-            class="w-full flex items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-slate-50 text-slate-700 cursor-pointer"
-            (click)="menuOpen = false"
-            role="menuitem"
-          >
-            <svg
-              class="h-4 w-4 text-slate-500"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5.12 5.12a9 9 0 1012.73 12.73M15 9l-6 6"
-              />
-            </svg>
-            Perfil (próximamente)
-          </button>
-
-          <button
-            type="button"
-            class="w-full flex items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-red-50 text-red-600 cursor-pointer"
-            (click)="logout()"
-            role="menuitem"
-          >
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 11-4 0v-1m4-8V7a2 2 0 10-4 0v1"
-              />
-            </svg>
-            Cerrar sesión
-          </button>
-        </div>
+        }
       </div>
     </div>
   </div>

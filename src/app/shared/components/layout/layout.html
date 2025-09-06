@@ -1,9 +1,7 @@
-<div class="flex h-screen overflow-hidden bg-slate-900 text-slate-100">
+<div class="flex h-screen overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-slate-200">
   <!-- Sidebar fijo (DESKTOP) -->
   <aside class="hidden md:block w-64 shrink-0">
-    <!-- Wrapper sticky con alto de viewport real -->
-    <div class="sticky top-0 h-dvh min-h-0 bg-slate-900 border-r border-slate-800">
-      <!-- El componente llena todo -->
+    <div class="sticky top-0 h-dvh min-h-0 bg-slate-950 border-r border-slate-800/60">
       <app-sidebar class="h-full"></app-sidebar>
     </div>
   </aside>
@@ -14,33 +12,33 @@
 
     <!-- Off-canvas (MÓVIL) + backdrop -->
     <aside
-      class="fixed md:hidden inset-y-0 left-0 z-50 w-72 transition-transform duration-200 ease-out"
+      class="fixed md:hidden inset-y-0 left-0 z-50 w-72 transition-transform duration-200 ease-out
+             bg-slate-950 border-r border-slate-800/60"
       [class.-translate-x-full]="!sidebarVisible"
-      [class.translate-x-0]="sidebarVisible"
-    >
-      <!-- Alto de viewport + sin overflow aquí -->
-      <div class="h-dvh min-h-0 bg-slate-900 border-r border-slate-800">
+      [class.translate-x-0]="sidebarVisible">
+      <div class="h-dvh min-h-0">
         <app-sidebar class="h-full"></app-sidebar>
       </div>
     </aside>
 
     @if (sidebarVisible) {
-      <div
-        class="fixed md:hidden inset-0 z-40 bg-black/40 cursor-pointer"
-        (click)="closeSidebar()"
-      ></div>
+      <div class="fixed md:hidden inset-0 z-40 bg-black/50 backdrop-blur-[2px] cursor-pointer"
+           (click)="closeSidebar()"></div>
     }
 
     <!-- Contenido (solo aquí hay scroll) -->
-    <main class="h-[calc(100vh-4rem)] overflow-y-auto bg-slate-100">
+    <main class="h-[calc(100vh-4rem)] overflow-y-auto">
       <div class="px-4 md:px-8 py-6">
         <div
-          class="rounded-3xl border-2 border-emerald-400/80 bg-white/70 backdrop-blur p-6 shadow-[0_20px_40px_-20px_rgba(16,185,129,.25)]"
-        >
+          class="rounded-3xl border border-white/10 bg-slate-900/60 backdrop-blur-md p-6
+                 shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)]">
           <router-outlet></router-outlet>
           <app-footer></app-footer>
         </div>
       </div>
     </main>
   </section>
+
+  <!-- toasts flotan sobre todo -->
+  <app-toasts></app-toasts>
 </div>
