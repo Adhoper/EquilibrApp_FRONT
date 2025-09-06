@@ -1,0 +1,46 @@
+<div class="flex h-screen overflow-hidden bg-slate-900 text-slate-100">
+  <!-- Sidebar fijo (DESKTOP) -->
+  <aside class="hidden md:block w-64 shrink-0">
+    <!-- Wrapper sticky con alto de viewport real -->
+    <div class="sticky top-0 h-dvh min-h-0 bg-slate-900 border-r border-slate-800">
+      <!-- El componente llena todo -->
+      <app-sidebar class="h-full"></app-sidebar>
+    </div>
+  </aside>
+
+  <!-- Shell derecha -->
+  <section class="flex-1 flex flex-col min-w-0">
+    <app-header (abrirSidebar)="toggleSidebarDesdeHeader()"></app-header>
+
+    <!-- Off-canvas (MÓVIL) + backdrop -->
+    <aside
+      class="fixed md:hidden inset-y-0 left-0 z-50 w-72 transition-transform duration-200 ease-out"
+      [class.-translate-x-full]="!sidebarVisible"
+      [class.translate-x-0]="sidebarVisible"
+    >
+      <!-- Alto de viewport + sin overflow aquí -->
+      <div class="h-dvh min-h-0 bg-slate-900 border-r border-slate-800">
+        <app-sidebar class="h-full"></app-sidebar>
+      </div>
+    </aside>
+
+    @if (sidebarVisible) {
+      <div
+        class="fixed md:hidden inset-0 z-40 bg-black/40 cursor-pointer"
+        (click)="closeSidebar()"
+      ></div>
+    }
+
+    <!-- Contenido (solo aquí hay scroll) -->
+    <main class="h-[calc(100vh-4rem)] overflow-y-auto bg-slate-100">
+      <div class="px-4 md:px-8 py-6">
+        <div
+          class="rounded-3xl border-2 border-emerald-400/80 bg-white/70 backdrop-blur p-6 shadow-[0_20px_40px_-20px_rgba(16,185,129,.25)]"
+        >
+          <router-outlet></router-outlet>
+          <app-footer></app-footer>
+        </div>
+      </div>
+    </main>
+  </section>
+</div>

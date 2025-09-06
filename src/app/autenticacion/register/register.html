@@ -1,0 +1,89 @@
+<!-- register.html -->
+<div class="min-h-[100dvh] bg-slate-900 text-slate-100 relative overflow-hidden">
+  <div class="h-1 w-full bg-emerald-500"></div>
+
+  <div class="mx-auto max-w-6xl grid md:grid-cols-2 items-center gap-0 min-h-[calc(100dvh-4px)] px-4 sm:px-6">
+    <div class="flex items-center justify-center py-10 order-1 md:order-2 md:pl-8">
+      <div class="w-full max-w-md bg-white text-slate-900 rounded-2xl shadow-xl p-8">
+        <div class="mb-7">
+          <h3 class="font-semibold text-2xl">Crear cuenta</h3>
+          <p class="text-slate-500 text-sm">
+            ¿Ya tienes cuenta?
+            <a routerLink="/login" class="text-emerald-600 hover:underline font-medium cursor-pointer">Inicia sesión</a>
+          </p>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-slate-700">Nombre</label>
+            <input formControlName="nombre" type="text" autocomplete="name" placeholder="Tu nombre"
+              class="mt-1 w-full rounded-lg bg-slate-100 border px-4 py-3 text-sm outline-none
+                     focus:bg-white focus:border-emerald-400 border-slate-200"
+              [class.border-red-500]="invalid('nombre')" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700">Email</label>
+            <input formControlName="correo" type="email" autocomplete="email" placeholder="tucorreo@dominio.com"
+              class="mt-1 w-full rounded-lg bg-slate-100 border px-4 py-3 text-sm outline-none
+                     focus:bg-white focus:border-emerald-400 border-slate-200"
+              [class.border-red-500]="invalid('correo')" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700">Contraseña</label>
+            <div class="relative mt-1">
+              <input formControlName="contrasena" [type]="showPassword ? 'text' : 'password'"
+                autocomplete="new-password" placeholder="••••••••"
+                class="w-full rounded-lg bg-slate-100 border px-4 py-3 text-sm outline-none
+                       focus:bg-white focus:border-emerald-400 border-slate-200"
+                [class.border-red-500]="invalid('contrasena')" />
+              <button type="button" (click)="showPassword=!showPassword"
+                class="absolute inset-y-0 right-0 px-3 text-slate-500 hover:text-slate-700 cursor-pointer">
+                <!-- iconos igual que en login -->
+                <svg *ngIf="!showPassword" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                <svg *ngIf="showPassword" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.96 9.96 0 012.223-3.592m3.265-2.29A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.96 9.96 0 01-1.249 2.527M3 3l18 18"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700">Confirmar contraseña</label>
+            <div class="relative mt-1">
+              <input formControlName="confirmar" [type]="showConfirm ? 'text' : 'password'"
+                autocomplete="new-password" placeholder="••••••••"
+                class="w-full rounded-lg bg-slate-100 border px-4 py-3 text-sm outline-none
+                       focus:bg-white focus:border-emerald-400 border-slate-200"
+                [class.border-red-500]="invalid('confirmar') || mismatch" />
+              <button type="button" (click)="showConfirm=!showConfirm"
+                class="absolute inset-y-0 right-0 px-3 text-slate-500 hover:text-slate-700 cursor-pointer">
+                <!-- iconos -->
+                <svg *ngIf="!showConfirm" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                <svg *ngIf="showConfirm" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.96 9.96 0 012.223-3.592m3.265-2.29A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.96 9.96 0 01-1.249 2.527M3 3l18 18"/></svg>
+              </button>
+            </div>
+            <div *ngIf="mismatch" class="text-red-600 text-xs mt-1">Las contraseñas no coinciden</div>
+          </div>
+
+          <div *ngIf="errorMensaje" class="text-red-600 text-sm px-1 -mt-2">{{ errorMensaje }}</div>
+
+          <button type="submit"
+            [disabled]="loading || form.invalid || mismatch"
+            class="w-full flex justify-center items-center gap-2 bg-emerald-600 hover:bg-emerald-700
+                   text-white px-4 py-3 rounded-lg font-semibold transition cursor-pointer
+                   disabled:opacity-60 disabled:cursor-not-allowed">
+            <span *ngIf="!loading">Crear cuenta</span>
+            <span *ngIf="loading" class="animate-pulse">Creando…</span>
+          </button>
+        </form>
+
+        <p class="mt-6 text-center text-xs text-slate-400">© 2025 EquilibrApp — Todos los derechos reservados.</p>
+      </div>
+    </div>
+
+    <!-- Branding -->
+    <div class="flex items-center justify-center p-8 md:p-10 order-2 md:order-1 md:pr-8">
+      <!-- ... tu bloque lateral ... -->
+    </div>
+  </div>
+</div>
