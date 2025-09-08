@@ -20,7 +20,7 @@ private auth = inject(AuthService);
   principal: any[] = [
     { label: 'Dashboard', path: '/dashboard', icon: 'home' },
     { label: 'Transacciones', path: '/transacciones', icon: 'list' },
-    { label: 'Nueva transacción', path: '/transacciones/nueva', icon: 'plus' },
+    //{ label: 'Nueva transacción', path: '/transacciones/nueva', icon: 'plus' },
   ];
 
   gestion: any[] = [

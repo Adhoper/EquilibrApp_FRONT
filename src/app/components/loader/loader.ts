@@ -8,31 +8,42 @@ import { LoaderService } from '../../services/loader.service';
   imports: [CommonModule],
   template: `
     <!-- loader.component.html inline -->
-    @if (isLoading$ | async) {
+@if (isLoading$ | async) {
+  <div
+    class="fixed inset-0 z-[10000] grid place-items-center
+           bg-slate-950/60 backdrop-blur-sm
+           pointer-events-auto"
+    role="status" aria-live="polite" aria-busy="true"
+  >
     <div
-      class="fixed inset-0 z-[10000] grid place-items-center bg-slate-900/10"
-      style="pointer-events: all"
+      class="rounded-2xl bg-slate-900/50 border border-white/10
+             px-6 py-5 shadow-2xl shadow-emerald-500/10
+             flex flex-col items-center gap-3 select-none"
     >
-      <div
-        class="flex flex-col items-center gap-3 pointer-events-none"
-        role="status"
-        aria-live="polite"
-        aria-busy="true"
-      >
-        <div class="relative">
-          <div
-            class="h-12 w-12 rounded-full border-4 border-emerald-400/30 border-t-emerald-500 motion-safe:animate-spin"
-          ></div>
-          <div class="absolute inset-0 grid place-items-center">
-            <span class="text-xs font-extrabold text-emerald-500 tracking-wider">EA</span>
-          </div>
+      <!-- Spinner -->
+      <div class="relative">
+        <!-- aro principal -->
+        <div
+          class="h-14 w-14 rounded-full border-4
+                 border-white/10 border-t-emerald-400
+                 motion-safe:animate-spin motion-reduce:animate-none"
+        ></div>
+        <!-- glow suave -->
+        <div class="absolute inset-0 rounded-full ring-2 ring-emerald-400/25 blur-[2px]"></div>
+        <!-- marca -->
+        <div class="absolute inset-0 grid place-items-center">
+          <span class="text-[11px] font-extrabold tracking-widest text-emerald-300">EA</span>
         </div>
-        <span class="text-sm text-slate-800">
-          Cargando <span class="text-emerald-600 font-semibold">EquilibrApp</span>…
-        </span>
       </div>
+
+      <!-- Texto -->
+      <span class="text-sm text-slate-200">
+        Cargando <span class="text-emerald-400 font-semibold">EquilibrApp</span>…
+      </span>
     </div>
-    }
+  </div>
+}
+
   `,
 })
 export class Loader implements OnInit {
