@@ -1,23 +1,23 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { finalize } from 'rxjs/operators';
+import { finalize, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subscription, startWith } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { startWith } from 'rxjs';
 
 import { AuthService } from '../../services/AuthService.service';
 import { LoaderService } from '../../services/loader.service';
 import { SwalService } from '../../services/swal.service';
-import { ToastService } from '../../services/toast.service'; // (por si luego lo necesitas)
+import { ToastService } from '../../services/toast.service';
 import { CuentaService } from '../../services/Cuenta.service';
 
 type Cuenta = {
   idCuenta: number;
   idUsuario: number;
   nombreCuenta: string;
+  saldoInicial?: number | null;
   estatus?: 'A' | 'I';
-  // opcionales (por si tu API los trae; no se envían al guardar)
   colorHexadecimal?: string | null;
 };
 
@@ -26,16 +26,18 @@ type Filtro = 'todas' | 'inactivas';
 @Component({
   selector: 'app-cuentas',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './cuentas.html'
 })
-export class Cuentas implements OnInit {
+export class Cuentas implements OnInit, OnDestroy {
   private fb     = inject(FormBuilder);
   private auth   = inject(AuthService);
   private ctaSrv = inject(CuentaService);
   private loader = inject(LoaderService);
   private swal   = inject(SwalService);
   private toast  = inject(ToastService);
+
+  private subs = new Subscription();
 
   user = this.auth.getUsuario();
   idUsuario = this.user?.idUsuario ?? 0;
@@ -45,54 +47,67 @@ export class Cuentas implements OnInit {
   cargando = signal(false);
 
   // búsqueda / filtros
-  buscarTxt  = signal('');
+  buscarCtrl = this.fb.control<string>('', { nonNullable: true });
+  buscarTxt  = signal<string>('');
   filtro     = signal<Filtro>('todas');
 
-  // form
+  // form (sin moneda)
   form = this.fb.group({
     idCuenta: this.fb.control<number | null>(null),
-    nombreCuenta: this.fb.control('', { nonNullable: true, validators: [Validators.required, Validators.minLength(2)] }),
+    nombreCuenta: this.fb.control('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(2)]
+    }),
+    saldoInicial: this.fb.control<number>(0, {
+      nonNullable: true,
+      validators: [Validators.min(0)]
+    }),
+    // opcional / visual
     colorHexadecimal: this.fb.control<string>('#22C55E', { nonNullable: true })
   });
   get f() { return this.form.controls; }
 
-  // que el título reaccione incluso al reset()
+  // título reactivo
   private idCuentaSig = toSignal(
     this.f.idCuenta.valueChanges.pipe(startWith(this.f.idCuenta.value)),
     { initialValue: this.f.idCuenta.value }
   );
   editando = computed(() => this.idCuentaSig() != null);
 
-  // listado filtrado (cliente)
+  // listado en cliente
   listaFiltrada = computed(() => {
-    const q = this.buscarTxt().trim().toLowerCase();
-    const showInactivas = this.filtro() === 'inactivas';
-    let arr = this.cuentas();
-
-    if (showInactivas) {
-      arr = arr.filter(x => (x.estatus ?? 'A') === 'I');
-    } else {
-      // si tu API devuelve activas por defecto, genial; si no, esto asegura mostrar A
-      arr = arr.filter(x => (x.estatus ?? 'A') === 'A');
-    }
-
-    if (q) arr = arr.filter(x => (x.nombreCuenta || '').toLowerCase().includes(q));
-
+    const arr = this.cuentas() || [];
     return [...arr].sort((a, b) => a.nombreCuenta.localeCompare(b.nombreCuenta));
   });
 
   ngOnInit(): void {
+    // debounce de búsqueda
+    this.subs.add(
+      this.buscarCtrl.valueChanges
+        .pipe(debounceTime(500), distinctUntilChanged())
+        .subscribe(v => {
+          this.buscarTxt.set((v || '').trim());
+          this.cargarLista();
+        })
+    );
+
+    // primera carga
+    this.buscarTxt.set(this.buscarCtrl.value.trim());
     this.cargarLista();
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 
   // === DATA ===
   private asList(r: any): Cuenta[] {
     const raw = Array.isArray(r) ? r : (r?.dataList ?? r ?? []);
-    // normalización defensiva
     return (raw || []).map((x: any) => ({
       idCuenta: x.idCuenta,
       idUsuario: x.idUsuario ?? this.idUsuario,
       nombreCuenta: x.nombreCuenta ?? x.cuenta ?? '',
+      saldoInicial: Number(x.saldoInicial ?? 0),
       estatus: x.estatus ?? 'A',
       colorHexadecimal: x.colorHexadecimal ?? null
     })) as Cuenta[];
@@ -100,8 +115,11 @@ export class Cuentas implements OnInit {
 
   cargarLista() {
     this.cargando.set(true);
+    const soloActivas = this.filtro() !== 'inactivas';
+    const buscar = this.buscarTxt().trim() || undefined;
+
     this.loader.show();
-    this.ctaSrv.Listar(this.idUsuario).pipe(
+    this.ctaSrv.Listar(this.idUsuario, soloActivas, buscar).pipe(
       finalize(() => { this.cargando.set(false); this.loader.hide(); })
     ).subscribe({
       next: (r: any) => this.cuentas.set(this.asList(r)),
@@ -109,18 +127,10 @@ export class Cuentas implements OnInit {
     });
   }
 
-  // búsqueda con debounce simple (sin Rx extra)
-  private _t: any;
-  onBuscar(term: string) {
-    this.buscarTxt.set(term);
-    clearTimeout(this._t);
-    this._t = setTimeout(() => this.cargarLista(), 500);
-  }
-
   setFiltro(f: Filtro) {
     if (this.filtro() === f) return;
     this.filtro.set(f);
-    // no forzamos re-fetch: filtramos en cliente; si prefieres pedir al backend, llama a cargarLista()
+    this.cargarLista();
   }
 
   // === FORM ===
@@ -128,6 +138,7 @@ export class Cuentas implements OnInit {
     this.form.setValue({
       idCuenta: c.idCuenta,
       nombreCuenta: c.nombreCuenta,
+      saldoInicial: Number(c.saldoInicial ?? 0),
       colorHexadecimal: (c.colorHexadecimal || '#22C55E').toUpperCase()
     });
   }
@@ -136,15 +147,14 @@ export class Cuentas implements OnInit {
     this.form.reset({
       idCuenta: null,
       nombreCuenta: '',
+      saldoInicial: 0,
       colorHexadecimal: '#22C55E'
     });
   }
 
-  onColorHexChange(v: string) {
-    if (!v) return;
-    const up = v.toUpperCase();
-    if (!up.startsWith('#')) this.f.colorHexadecimal.setValue('#' + up);
-    else this.f.colorHexadecimal.setValue(up);
+  invalid(ctrl: keyof typeof this.f) {
+    const c = this.f[ctrl];
+    return !!c && c.invalid && (c.touched || c.dirty);
   }
 
   onSubmit() {
@@ -155,11 +165,11 @@ export class Cuentas implements OnInit {
     }
 
     const v = this.form.getRawValue();
-    // enviamos solo lo que sabemos que el backend acepta
     const model = {
       idCuenta: v.idCuenta,
       idUsuario: this.idUsuario,
-      nombreCuenta: (v.nombreCuenta || '').trim()
+      nombreCuenta: (v.nombreCuenta || '').trim(),
+      saldoInicial: Number(v.saldoInicial ?? 0)
     };
 
     this.cargando.set(true);
@@ -180,36 +190,38 @@ export class Cuentas implements OnInit {
     });
   }
 
-  toggleEstatus(c: Cuenta) {
+  async toggleEstatus(c: Cuenta) {
     const activar = (c.estatus ?? 'A') === 'I';
     const titulo  = activar ? 'Activar cuenta' : 'Desactivar cuenta';
-    const texto   = activar
-      ? `¿Activar "${c.nombreCuenta}"?`
-      : `¿Desactivar "${c.nombreCuenta}"?`;
+    const texto   = activar ? `¿Activar "${c.nombreCuenta}"?` : `¿Desactivar "${c.nombreCuenta}"?`;
 
-    this.swal.confirm(titulo, texto).then(ok => {
-      // ✅ no hacer nada si cancelan o cierran
-      if (!ok) return;
+    const res: any = await this.swal.confirm(titulo, texto);
+    const confirmed = res === true || res?.isConfirmed === true || res?.value === true;
+    if (!confirmed) return;
 
-      this.loader.show();
-      this.ctaSrv.CambiarEstatus({
-        idUsuario: this.idUsuario,
-        idCuenta: c.idCuenta,
-        estatus: activar ? 'A' : 'I'
-      }).pipe(
-        finalize(() => this.loader.hide())
-      ).subscribe({
-        next: (r: any) => {
-          if (r?.successful) {
-            this.swal.success('Hecho', r?.message || (activar ? 'Cuenta activada.' : 'Cuenta desactivada.'));
-            // refrescamos localmente para evitar otro fetch si quieres
-            this.cuentas.update(arr => arr.map(x => x.idCuenta === c.idCuenta ? { ...x, estatus: activar ? 'A' : 'I' } : x));
-          } else {
-            this.swal.warn('No se pudo cambiar el estatus', r?.message || 'Intenta nuevamente.');
-          }
-        },
-        error: () => this.swal.error('Error', 'No se pudo cambiar el estatus.')
-      });
+    this.loader.show();
+    this.ctaSrv.CambiarEstatus({
+      idUsuario: this.idUsuario,
+      idCuenta: c.idCuenta,
+      estatus: activar ? 'A' : 'I'
+    }).pipe(
+      finalize(() => this.loader.hide())
+    ).subscribe({
+      next: (r: any) => {
+        if (r?.successful) {
+          this.swal.success('Hecho', r?.message || (activar ? 'Cuenta activada.' : 'Cuenta desactivada.'));
+          this.cargarLista();
+        } else {
+          this.swal.warn('No se pudo cambiar el estatus', r?.message || 'Intenta nuevamente.');
+        }
+      },
+      error: () => this.swal.error('Error', 'No se pudo cambiar el estatus.')
     });
+  }
+
+  // Buscar inmediato (Enter/botón)
+  buscarAhora() {
+    this.buscarTxt.set(this.buscarCtrl.value);
+    this.cargarLista();
   }
 }

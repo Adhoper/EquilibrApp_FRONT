@@ -1,0 +1,136 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <h2 class="text-xl font-semibold text-slate-100">Saldos por período</h2>
+      <span class="text-xs text-slate-400">Saldos por cuenta en el mes seleccionado</span>
+    </div>
+
+    <!-- Mes + Cuenta -->
+    <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+      <div class="flex items-center gap-2">
+        <button type="button" class="p-2 rounded-md bg-white text-slate-700 hover:bg-slate-100 cursor-pointer"
+                (click)="prevMes()" aria-label="Mes anterior">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <div class="text-sm font-semibold text-slate-100">
+          {{ fmtPeriodo(periodo()) | titlecase }}
+        </div>
+        <button type="button" class="p-2 rounded-md bg-white text-slate-700 hover:bg-slate-100 cursor-pointer"
+                (click)="nextMes()" aria-label="Mes siguiente">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Selector de cuenta -->
+      <div class="min-w-52">
+        <select
+          class="w-full rounded-lg border px-3 py-2 outline-none bg-slate-900/40 text-slate-100 border-white/10 focus:ring-2 focus:ring-emerald-400 cursor-pointer"
+          [ngModel]="idCuenta()"
+          (ngModelChange)="onCuentaChange($event)"
+        >
+          <option [ngValue]="null">Todas las cuentas</option>
+          @for (c of cuentas(); track c.id) {
+            <option class="bg-slate-900 text-slate-100" [ngValue]="c.id">{{ c.nombre }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Totales -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    <div class="rounded-xl p-4 border bg-slate-900/60 border-white/10">
+      <div class="text-xs text-slate-400">Saldo inicial</div>
+      <div class="text-xl font-semibold text-slate-100">
+        {{ totales().saldoInicial | currency:'DOP':'symbol':'1.0-0' }}
+      </div>
+    </div>
+    <div class="rounded-xl p-4 border bg-slate-900/60 border-white/10">
+      <div class="text-xs text-slate-400">Ingresos</div>
+      <div class="text-xl font-semibold text-emerald-300">
+        {{ totales().ingresos | currency:'DOP':'symbol':'1.0-0' }}
+      </div>
+    </div>
+    <div class="rounded-xl p-4 border bg-slate-900/60 border-white/10">
+      <div class="text-xs text-slate-400">Gastos</div>
+      <div class="text-xl font-semibold text-rose-300">
+        {{ totales().gastos | currency:'DOP':'symbol':'1.0-0' }}
+      </div>
+    </div>
+    <div class="rounded-xl p-4 border bg-slate-900/60 border-white/10">
+      <div class="text-xs text-slate-400">Saldo final</div>
+      <div class="text-xl font-semibold"
+           [class.text-emerald-300]="totales().saldoFinal >= 0"
+           [class.text-rose-300]="totales().saldoFinal < 0">
+        {{ totales().saldoFinal | currency:'DOP':'symbol':'1.0-0' }}
+      </div>
+      <div class="text-[11px] mt-1"
+           [class.text-emerald-300]="totales().variacion >= 0"
+           [class.text-rose-300]="totales().variacion < 0">
+        Variación: {{ totales().variacion | currency:'DOP':'symbol':'1.0-0' }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+      <div class="text-sm font-medium text-slate-100 mb-2">Ingresos vs Gastos</div>
+      <div echarts [options]="igOptions()" class="h-80 w-full"></div>
+    </div>
+
+    <div class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+      <div class="text-sm font-medium text-slate-100 mb-2">Saldo final por cuenta</div>
+      <div echarts [options]="saldoOptions()" class="h-80 w-full"></div>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+    <div class="text-sm font-medium text-slate-100 mb-3">Detalle por cuenta</div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[720px] text-sm">
+        <thead class="text-slate-400">
+          <tr class="border-b border-white/10">
+            <th class="py-2 text-left w-56">Cuenta</th>
+            <th class="py-2 text-right w-36">Saldo inicial</th>
+            <th class="py-2 text-right w-36">Ingresos</th>
+            <th class="py-2 text-right w-36">Gastos</th>
+            <th class="py-2 text-right w-36">Variación</th>
+            <th class="py-2 text-right w-36">Saldo final</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (!filas().length) {
+            <tr><td class="py-4 text-slate-400" colspan="6">Sin datos para este período.</td></tr>
+          } @else {
+            @for (f of filas(); track f.idCuenta) {
+              <tr class="border-b border-white/5 hover:bg-slate-800/40">
+                <td class="py-2 text-slate-100">{{ f.cuenta }}</td>
+                <td class="py-2 text-right">{{ f.saldoInicial | currency:'DOP':'symbol':'1.0-0' }}</td>
+                <td class="py-2 text-right text-emerald-300">{{ f.ingresos | currency:'DOP':'symbol':'1.0-0' }}</td>
+                <td class="py-2 text-right text-rose-300">{{ f.gastos | currency:'DOP':'symbol':'1.0-0' }}</td>
+                <td class="py-2 text-right"
+                    [class.text-emerald-300]="(f.ingresos - f.gastos) >= 0"
+                    [class.text-rose-300]="(f.ingresos - f.gastos) < 0">
+                  {{ (f.ingresos - f.gastos) | currency:'DOP':'symbol':'1.0-0' }}
+                </td>
+                <td class="py-2 text-right"
+                    [class.text-emerald-300]="f.saldoFinal >= 0"
+                    [class.text-rose-300]="f.saldoFinal < 0">
+                  {{ f.saldoFinal | currency:'DOP':'symbol':'1.0-0' }}
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

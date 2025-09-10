@@ -20,16 +20,29 @@
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Formulario -->
     <div class="lg:col-span-1 rounded-2xl p-5 border bg-slate-900/60 border-white/10">
-      <div class="flex items-center justify-between mb-2">
-        <h3 class="font-semibold text-slate-100">
-          {{ editando() ? 'Editar cuenta' : 'Nueva cuenta' }}
-        </h3>
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <h3 class="font-semibold text-slate-100">
+            {{ editando() ? 'Editar cuenta' : 'Nueva cuenta' }}
+          </h3>
+          <span
+            class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wide"
+            [ngClass]="
+              editando()
+                ? 'border border-amber-300/30 bg-amber-400/10 text-amber-200'
+                : 'border border-emerald-300/30 bg-emerald-400/10 text-emerald-200'
+            "
+          >
+            {{ editando() ? 'Editando' : 'Nueva' }}
+          </span>
+        </div>
 
         @if (editando()) {
-          <div class="inline-flex items-center gap-1 rounded-full px-2 py-0.5
-                      text-xs border border-amber-300/30 bg-amber-400/10 text-amber-200">
-            Editando
-          </div>
+          <button type="button"
+                  class="text-xs text-emerald-300 hover:text-emerald-200 underline cursor-pointer"
+                  (click)="limpiar()">
+            Crear nueva
+          </button>
         }
       </div>
 
@@ -37,39 +50,49 @@
         <!-- Nombre -->
         <div>
           <label class="block text-sm text-slate-300 mb-1">Nombre *</label>
-          <input type="text" formControlName="nombreCuenta" placeholder="Ej. Banco Popular • Cuenta nómina"
-                 class="w-full rounded-lg border px-3 py-2 outline-none
-                        bg-slate-900/40 text-slate-100 placeholder-slate-500
-                        border-white/10 focus:ring-2 focus:ring-emerald-400"
-                 [class.border-rose-400]="form.controls.nombreCuenta.invalid && (form.controls.nombreCuenta.dirty || form.controls.nombreCuenta.touched)">
+          <input
+            type="text"
+            formControlName="nombreCuenta"
+            placeholder="Ej. Banco Popular • Cuenta nómina"
+            class="w-full rounded-lg border px-3 py-2 outline-none
+                   bg-slate-900/40 text-slate-100 placeholder-slate-500
+                   border-white/10 focus:ring-2 focus:ring-emerald-400"
+            [class.border-rose-400]="
+              form.controls.nombreCuenta.invalid &&
+              (form.controls.nombreCuenta.dirty || form.controls.nombreCuenta.touched)
+            "
+          />
           @if (form.controls.nombreCuenta.invalid && (form.controls.nombreCuenta.dirty || form.controls.nombreCuenta.touched)) {
             <p class="mt-1 text-xs text-rose-400">Ingresa al menos 2 caracteres.</p>
           }
         </div>
 
-        <!-- Color (opcional/visual) -->
+        <!-- Saldo inicial -->
         <div>
-          <label class="block text-sm text-slate-300 mb-1">Color</label>
-          <div class="flex items-center gap-3">
-            <input type="color" formControlName="colorHexadecimal"
-                   class="h-9 w-12 p-1 rounded-md bg-transparent border border-white/10 cursor-pointer">
-            <input type="text"
-                   [value]="form.controls.colorHexadecimal.value"
-                   (input)="onColorHexChange(($any($event.target)).value)"
-                   class="w-28 rounded-lg border px-3 py-2 outline-none
-                          bg-slate-900/40 text-slate-100 placeholder-slate-500
-                          border-white/10 focus:ring-2 focus:ring-emerald-400"
-                   placeholder="#22C55E" maxlength="7">
-          </div>
-          <p class="mt-1 text-[11px] text-slate-400">Solo visual. No se envía al servidor.</p>
+          <label class="block text-sm text-slate-300 mb-1">Saldo inicial *</label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            formControlName="saldoInicial"
+            placeholder="0.00"
+            class="w-full rounded-lg border px-3 py-2 outline-none
+                   bg-slate-900/40 text-slate-100 placeholder-slate-500
+                   border-white/10 focus:ring-2 focus:ring-emerald-400"
+            [class.border-rose-400]="invalid('saldoInicial')"
+          />
+          @if (invalid('saldoInicial')) {
+            <p class="mt-1 text-xs text-rose-400">Debe ser un número ≥ 0.</p>
+          }
         </div>
 
         <!-- Acciones -->
-        <div class="flex items-center justify-end gap-2">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-end gap-2 pt-2">
           <button type="button"
                   class="px-4 py-2 rounded-lg border cursor-pointer
                          bg-slate-900/40 text-slate-200 border-white/10 hover:bg-slate-800/60"
-                  (click)="limpiar()" [disabled]="cargando()">
+                  (click)="limpiar()"
+                  [disabled]="cargando()">
             Limpiar
           </button>
           <button type="submit"
@@ -86,47 +109,70 @@
     <div class="lg:col-span-2 rounded-2xl p-5 border bg-slate-900/60 border-white/10">
       <!-- Filtros / búsqueda -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div class="flex items-center gap-2">
-          <button type="button" class="px-3 py-1.5 rounded-full text-xs border cursor-pointer
-                                      bg-slate-900/40 text-slate-300 border-white/10 hover:bg-slate-800/60"
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button"
+                  class="px-3 py-1.5 rounded-full text-xs border cursor-pointer
+                         bg-slate-900/40 text-slate-300 border-white/10 hover:bg-slate-800/60"
                   [ngClass]="{ 'bg-emerald-600 text-white border-emerald-600': filtro()==='todas' }"
-                  (click)="setFiltro('todas')">Activas</button>
+                  (click)="setFiltro('todas')">
+            Activas
+          </button>
 
-          <button type="button" class="px-3 py-1.5 rounded-full text-xs border cursor-pointer
-                                      bg-slate-900/40 text-slate-300 border-white/10 hover:bg-slate-800/60"
+          <button type="button"
+                  class="px-3 py-1.5 rounded-full text-xs border cursor-pointer
+                         bg-slate-900/40 text-slate-300 border-white/10 hover:bg-slate-800/60"
                   [ngClass]="{ 'bg-slate-700 text-white border-slate-700': filtro()==='inactivas' }"
-                  (click)="setFiltro('inactivas')">Inactivas</button>
+                  (click)="setFiltro('inactivas')">
+            Inactivas
+          </button>
         </div>
 
-        <div class="relative w-full sm:w-64">
-          <input type="text" placeholder="Buscar por nombre…"
-                 class="w-full pl-8 pr-3 py-2 rounded-lg border outline-none
-                        bg-slate-900/40 text-slate-100 placeholder-slate-500
-                        border-white/10 focus:ring-2 focus:ring-emerald-400"
-                 [value]="buscarTxt()"
-                 (input)="onBuscar(($any($event.target)).value)">
+        <!-- Buscador -->
+        <div class="relative w-full sm:w-72">
+          <input
+            type="text"
+            placeholder="Buscar…"
+            class="w-full pl-8 pr-20 py-2 rounded-lg border outline-none
+                   bg-slate-900/40 text-slate-100 placeholder-slate-500
+                   border-white/10 focus:ring-2 focus:ring-emerald-400"
+            [formControl]="buscarCtrl"
+            (keyup.enter)="buscarAhora()"
+          />
           <svg class="h-4 w-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"
                viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M21 21l-4.35-4.35M10 18a8 8 0 110-16 8 8 0 010 16z"/>
           </svg>
+          <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+            <button type="button"
+                    class="px-2 py-1 rounded-md border border-white/10 text-xs text-slate-300 hover:bg-slate-800/60 cursor-pointer"
+                    (click)="buscarAhora()">
+              Buscar
+            </button>
+            <button type="button"
+                    class="px-2 py-1 rounded-md border border-white/10 text-xs text-slate-300 hover:bg-slate-800/60 cursor-pointer"
+                    (click)="buscarCtrl.setValue('')">
+              Limpiar
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Tabla -->
       <div class="mt-4 overflow-x-auto">
-        <table class="w-full min-w-[560px] text-sm">
+        <table class="w-full min-w-[600px] text-sm">
           <thead class="text-slate-400">
             <tr class="border-b border-white/10">
               <th class="py-2 text-left">Nombre</th>
-              <th class="py-2 text-left">Estado</th>
-              <th class="py-2 text-right">Acciones</th>
+              <th class="py-2 text-left w-32">Saldo inicial</th>
+              <th class="py-2 text-left w-28">Estado</th>
+              <th class="py-2 text-right w-44">Acciones</th>
             </tr>
           </thead>
           <tbody>
             @if (!listaFiltrada().length) {
               <tr>
-                <td class="py-4 text-slate-400" colspan="3">No hay cuentas.</td>
+                <td class="py-4 text-slate-400" colspan="4">No hay cuentas.</td>
               </tr>
             } @else {
               @for (c of listaFiltrada(); track c.idCuenta) {
@@ -138,6 +184,11 @@
                       <span class="text-slate-100">{{ c.nombreCuenta }}</span>
                     </div>
                   </td>
+
+                  <td class="py-2 text-slate-300">
+                    {{ (c.saldoInicial ?? 0) | number:'1.0-2' }}
+                  </td>
+
                   <td class="py-2">
                     <span class="px-2 py-0.5 rounded-full border text-xs"
                           [ngClass]="{
@@ -147,11 +198,14 @@
                       {{ (c.estatus ?? 'A')==='A' ? 'Activa' : 'Inactiva' }}
                     </span>
                   </td>
+
                   <td class="py-2 text-right">
                     <div class="inline-flex items-center gap-1 shrink-0">
                       <button type="button"
                               class="px-2 py-1 rounded-md border border-white/10 text-slate-200 hover:bg-slate-800/60 cursor-pointer"
-                              (click)="editar(c)">Editar</button>
+                              (click)="editar(c)">
+                        Editar
+                      </button>
                       <button type="button"
                               class="px-2 py-1 rounded-md border text-slate-200 cursor-pointer hover:bg-slate-800/60"
                               [ngClass]="{

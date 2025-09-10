@@ -39,7 +39,9 @@
                  class="w-full rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-400 text-slate-100 placeholder-slate-500"
                  [class.border-red-400]="invalid('monto')"
                  formControlName="monto">
-          @if (invalid('monto')) { <p class="mt-1 text-xs text-rose-400">Ingresa un monto válido (≥ 0.01).</p> }
+          @if (invalid('monto')) {
+            <p class="mt-1 text-xs text-rose-400">Ingresa un monto válido (≥ 0.01).</p>
+          }
         </div>
 
         <!-- Fecha -->
@@ -49,7 +51,9 @@
                  class="w-full rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-400 text-slate-100"
                  [class.border-red-400]="invalid('fechaTransaccion')"
                  formControlName="fechaTransaccion">
-          @if (invalid('fechaTransaccion')) { <p class="mt-1 text-xs text-rose-400">Selecciona una fecha.</p> }
+          @if (invalid('fechaTransaccion')) {
+            <p class="mt-1 text-xs text-rose-400">Selecciona una fecha.</p>
+          }
         </div>
 
         <!-- Cuenta -->
@@ -64,7 +68,9 @@
               <option class="bg-slate-900 text-slate-100" [ngValue]="c.id">{{ c.nombre }}</option>
             }
           </select>
-          @if (invalid('idCuenta')) { <p class="mt-1 text-xs text-rose-400">Selecciona una cuenta.</p> }
+          @if (invalid('idCuenta')) {
+            <p class="mt-1 text-xs text-rose-400">Selecciona una cuenta.</p>
+          }
         </div>
 
         <!-- Categoría -->
@@ -79,7 +85,9 @@
               <option class="bg-slate-900 text-slate-100" [ngValue]="c.id">{{ c.nombre }}</option>
             }
           </select>
-          @if (invalid('idCategoria')) { <p class="mt-1 text-xs text-rose-400">Selecciona una categoría.</p> }
+          @if (invalid('idCategoria')) {
+            <p class="mt-1 text-xs text-rose-400">Selecciona una categoría.</p>
+          }
         </div>
 
         <!-- Nota -->
@@ -129,8 +137,11 @@
                        'bg-rose-200/20 text-rose-400': t.tipoTransaccion === 0
                      }">
                   <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path *ngIf="t.tipoTransaccion === 1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
-                    <path *ngIf="t.tipoTransaccion === 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m7 7l-7-7 7-7"/>
+                    @if (t.tipoTransaccion === 1) {
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+                    } @else {
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m7 7l-7-7 7-7"/>
+                    }
                   </svg>
                 </div>
                 <div>
@@ -153,115 +164,165 @@
     </div>
   </div>
 
-  <!-- === TODAS LAS TRANSACCIONES (tabla) === -->
-  <div id="all-transacciones" class="rounded-2xl bg-slate-900/60 p-5 border border-white/10">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-      <div class="flex items-center gap-2">
-        <button type="button" class="p-2 rounded-md bg-white text-slate-700 hover:bg-slate-100 cursor-pointer"
-                (click)="prevMes()" aria-label="Mes anterior">
-          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-          </svg>
-        </button>
-        <div class="text-sm font-semibold text-slate-100">
-          {{ fmtPeriodo(periodo()) | titlecase }}
-        </div>
-        <button type="button" class="p-2 rounded-md bg-white text-slate-700 hover:bg-slate-100 cursor-pointer"
-                (click)="nextMes()" aria-label="Mes siguiente">
-          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </button>
+<!-- === TODAS LAS TRANSACCIONES (tabla) === -->
+<div id="all-transacciones" class="rounded-2xl bg-slate-900/60 p-5 border border-white/10">
+  <!-- Encabezado: mes + buscador -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <!-- Mes -->
+    <div class="flex items-center gap-2">
+      <button type="button"
+              class="p-2 rounded-md bg-white text-slate-700 hover:bg-slate-100 cursor-pointer"
+              (click)="prevMes()" aria-label="Mes anterior">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+
+      <div class="text-sm font-semibold text-slate-100">
+        {{ fmtPeriodo(periodo()) | titlecase }}
       </div>
 
-      <div class="relative w-full sm:w-80">
-        <input type="text" placeholder="Buscar por categoría, cuenta o nota…"
-               class="w-full pl-8 pr-20 py-2 rounded-lg border outline-none
-                      bg-slate-950/60 text-slate-100 placeholder-slate-500
-                      border-white/10 focus:ring-2 focus:ring-emerald-400"
-               aria-describedby="tx-busqueda-hint"
-               [formControl]="buscarCtrl" (keyup.enter)="buscarAhora()">
-        <svg class="h-4 w-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"
-             viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <button type="button"
+              class="p-2 rounded-md bg-white text-slate-700 hover:bg-slate-100 cursor-pointer"
+              (click)="nextMes()" aria-label="Mes siguiente">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Buscador (botones adentro, sin desbordar) -->
+<!-- Buscador (flex: sin desbordes) -->
+<div class="w-full sm:w-[28rem]">
+  <div
+    class="flex items-center gap-2 rounded-lg border border-white/10 bg-slate-950/60
+           px-3 py-1.5 focus-within:ring-2 focus-within:ring-emerald-400">
+    <!-- Lupa -->
+    <svg class="h-4 w-4 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-4.35-4.35M10 18a8 8 0 110-16 8 8 0 010 16z"/>
+    </svg>
+
+    <!-- Input -->
+    <input
+      type="text"
+      placeholder="Buscar…"
+      class="flex-1 min-w-0 bg-transparent outline-none text-slate-100 placeholder-slate-500 h-8"
+      aria-describedby="tx-busqueda-hint"
+      [formControl]="buscarCtrl"
+      (keyup.enter)="buscarAhora()"
+    />
+
+    <!-- Botones (desktop: texto) -->
+    <div class="hidden sm:flex items-center gap-1 shrink-0">
+      <button type="button"
+              class="h-8 px-2 rounded-md border border-white/10 text-xs text-slate-300
+                     hover:bg-slate-800/60 cursor-pointer"
+              (click)="buscarAhora()">Buscar</button>
+      <button type="button"
+              class="h-8 px-2 rounded-md border border-white/10 text-xs text-slate-300
+                     hover:bg-slate-800/60 cursor-pointer"
+              (click)="limpiarBuscar()">Limpiar</button>
+    </div>
+
+    <!-- Botones (móvil: iconos) -->
+    <div class="flex sm:hidden items-center gap-1 shrink-0">
+      <button type="button"
+              class="h-8 w-8 rounded-md border border-white/10 text-slate-300
+                     hover:bg-slate-800/60 grid place-items-center cursor-pointer"
+              (click)="buscarAhora()">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M21 21l-4.35-4.35M10 18a8 8 0 110-16 8 8 0 010 16z"/>
         </svg>
-        <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
-          <button type="button"
-                  class="px-2 py-1 rounded-md border border-white/10 text-xs text-slate-300 hover:bg-slate-800/60 cursor-pointer"
-                  (click)="buscarAhora()">Buscar</button>
-          <button type="button"
-                  class="px-2 py-1 rounded-md border border-white/10 text-xs text-slate-300 hover:bg-slate-800/60 cursor-pointer"
-                  (click)="limpiarBuscar()">Limpiar</button>
-        </div>
-        <!-- Hint de búsqueda -->
-        <p id="tx-busqueda-hint" class="mt-1 text-[11px] text-slate-400">
-          Busca por <b>categoría</b>, <b>cuenta</b> o <b>nota</b>.
-        </p>
-      </div>
-    </div>
-
-    <div class="mt-4 overflow-x-auto">
-      <table class="w-full min-w-[760px] text-sm">
-        <thead class="text-slate-400">
-          <tr class="border-b border-white/10">
-            <th class="py-2 text-left w-40 pl-3">Fecha</th>
-            <th class="py-2 text-left w-44">Cuenta</th>
-            <th class="py-2 text-left w-48">Categoría</th>
-            <th class="py-2 text-left w-28">Tipo</th>
-            <th class="py-2 text-right w-40 pr-3">Monto</th>
-            <th class="py-2 text-left min-w-[200px] pl-3">Nota</th>
-          </tr>
-        </thead>
-        <tbody>
-          @if (!lista().length) {
-            <tr><td class="py-4 text-slate-400 pl-3" colspan="6">No hay transacciones en este período.</td></tr>
-          } @else {
-            @for (t of lista(); track t.idTransaccion) {
-              <tr class="border-b border-white/5 hover:bg-slate-800/40">
-                <td class="py-2 pl-3">{{ t.fechaTransaccion | date:'mediumDate' }}</td>
-                <td class="py-2">{{ t.cuenta }}</td>
-                <td class="py-2">{{ t.categoria }}</td>
-                <td class="py-2">
-                  <span class="px-2 py-0.5 rounded-full border text-xs"
-                        [ngClass]="{
-                          'border-rose-500/40 text-rose-300': t.tipoTransaccion===0,
-                          'border-emerald-500/40 text-emerald-300': t.tipoTransaccion===1
-                        }">
-                    {{ t.tipoTransaccion===0 ? 'Gasto' : 'Ingreso' }}
-                  </span>
-                </td>
-                <td class="py-2 text-right font-semibold pr-3"
-                    [class.text-rose-300]="t.tipoTransaccion===0"
-                    [class.text-emerald-300]="t.tipoTransaccion===1">
-                  {{ (t.tipoTransaccion===1 ? '+' : '-') }}{{ t.monto | currency:'DOP':'symbol':'1.0-0' }}
-                </td>
-                <td class="py-2 text-slate-300 truncate max-w-[360px] pl-3">{{ t.nota }}</td>
-              </tr>
-            }
-          }
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Paginación -->
-    <div class="mt-3 flex items-center justify-between text-sm text-slate-300">
-      <div>
-        Página {{ pagina() }} ·
-        Mostrando {{ lista().length }} de {{ total() }} registros
-      </div>
-      <div class="flex items-center gap-2">
-        <button type="button"
-                class="px-3 py-1.5 rounded-md border border-white/10 bg-slate-800 text-slate-200 hover:bg-slate-700 disabled:opacity-50 cursor-pointer"
-                (click)="irPag(-1)" [disabled]="pagina()<=1">
-          Anterior
-        </button>
-        <button type="button"
-                class="px-3 py-1.5 rounded-md border border-white/10 bg-slate-800 text-slate-200 hover:bg-slate-700 disabled:opacity-50 cursor-pointer"
-                (click)="irPag(1)" [disabled]="pagina()*tamPagina >= total()">
-          Siguiente
-        </button>
-      </div>
+      </button>
+      <button type="button"
+              class="h-8 w-8 rounded-md border border-white/10 text-slate-300
+                     hover:bg-slate-800/60 grid place-items-center cursor-pointer"
+              (click)="limpiarBuscar()">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
     </div>
   </div>
+
+  <p id="tx-busqueda-hint" class="mt-1 text-[11px] text-slate-400">
+    Filtra por <b>categoría</b>, <b>cuenta</b> o <b>nota</b>.
+  </p>
+</div>
+
+  </div>
+
+  <!-- Tabla -->
+  <div class="mt-4 overflow-x-auto">
+    <table class="w-full min-w-[760px] text-sm">
+      <thead class="text-slate-400">
+        <tr class="border-b border-white/10">
+          <th class="py-2 text-left w-40 pl-3">Fecha</th>
+          <th class="py-2 text-left w-44">Cuenta</th>
+          <th class="py-2 text-left w-48">Categoría</th>
+          <th class="py-2 text-left w-28">Tipo</th>
+          <th class="py-2 text-right w-40 pr-3">Monto</th>
+          <th class="py-2 text-left min-w-[200px] pl-3">Nota</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @if (!filtradas().length) {
+          <tr>
+            <td class="py-4 text-slate-400 pl-3" colspan="6">
+              No hay transacciones para este período/criterio.
+            </td>
+          </tr>
+        } @else {
+          <!-- Client-side paging con ngx-pagination (pipe) -->
+          @for (t of (filtradas() | paginate: { id: 'tx', itemsPerPage: tamPagina, currentPage: pagina() }); track t.idTransaccion) {
+            <tr class="border-b border-white/5 hover:bg-slate-800/40">
+              <td class="py-2 pl-3">{{ t.fechaTransaccion | date:'mediumDate' }}</td>
+              <td class="py-2">{{ t.cuenta }}</td>
+              <td class="py-2">{{ t.categoria }}</td>
+              <td class="py-2">
+                <span class="px-2 py-0.5 rounded-full border text-xs"
+                      [ngClass]="{
+                        'border-rose-500/40 text-rose-300': t.tipoTransaccion===0,
+                        'border-emerald-500/40 text-emerald-300': t.tipoTransaccion===1
+                      }">
+                  {{ t.tipoTransaccion===0 ? 'Gasto' : 'Ingreso' }}
+                </span>
+              </td>
+              <td class="py-2 text-right font-semibold pr-3"
+                  [class.text-rose-300]="t.tipoTransaccion===0"
+                  [class.text-emerald-300]="t.tipoTransaccion===1">
+                {{ (t.tipoTransaccion===1 ? '+' : '-') }}{{ t.monto | currency:'DOP':'symbol':'1.0-0' }}
+              </td>
+              <td class="py-2 text-slate-300 truncate max-w-[360px] pl-3">{{ t.nota }}</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <div class="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-slate-300">
+    <div>
+      Página {{ pagina() }} de {{ totalPaginas() }}
+      · Mostrando {{ mostrados() }} de {{ total() }} registros
+    </div>
+
+    <pagination-controls
+      id="tx"
+      [responsive]="true"
+      [maxSize]="7"
+      [autoHide]="true"
+      previousLabel="Anterior"
+      nextLabel="Siguiente"
+      (pageChange)="pageChanged($event)"
+      class="self-end">
+    </pagination-controls>
+  </div>
+</div>
+
 </div>
