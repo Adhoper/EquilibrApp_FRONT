@@ -25,3 +25,4 @@
 .ea-ng-select .ng-dropdown-panel .ng-option{ padding: .5rem .75rem; font-size: .875rem; }
 .ea-ng-select .ng-dropdown-panel .ng-option.ng-option-marked{ background: rgb(248 250 252); } /* slate-50 */
 .ea-ng-select .ng-dropdown-panel .ng-option.ng-option-selected{ background: rgb(236 253 245); color: rgb(5 150 105); } /* emerald */
+

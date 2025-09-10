@@ -5,10 +5,11 @@ import { LoaderService } from '../../services/loader.service';
 import { PresupuestoService } from '../../services/Presupuesto.service';
 import { TransaccionService } from '../../services/Transaccion.service';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

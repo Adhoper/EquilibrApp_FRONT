@@ -27,12 +27,12 @@ private auth = inject(AuthService);
     { label: 'Categorías', path: '/categorias', icon: 'tag' },
     { label: 'Cuentas', path: '/cuentas', icon: 'wallet' },
     { label: 'Presupuestos', path: '/presupuestos', icon: 'budget' },
-    { label: 'Presupuesto global', path: '/presupuesto-global', icon: 'globe' },
+    //{ label: 'Presupuesto global', path: '/presupuesto-global', icon: 'globe' },
   ];
 
   reportes: any[] = [
-    { label: 'Resumen por categoría', path: '/reportes/resumen-categoria', icon: 'pie' },
-    { label: 'Saldos por período', path: '/reportes/saldos', icon: 'chart' },
+    { label: 'Resumen por categoría', path: '/resumen-categoria', icon: 'pie' },
+    { label: 'Saldos por período', path: '/saldos', icon: 'chart' },
   ];
 
   ajustes: any[] = [

@@ -1,0 +1,89 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <h2 class="text-xl font-semibold text-slate-100">Resumen por categoría</h2>
+      <span class="text-xs text-slate-400">Gastos del mes agrupados por categoría</span>
+    </div>
+
+    <!-- Selector de mes -->
+    <div class="flex items-center gap-2">
+      <button type="button" class="p-2 rounded-md bg-white text-slate-700 hover:bg-slate-100 cursor-pointer"
+              (click)="prevMes()" aria-label="Mes anterior">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <div class="text-sm font-semibold text-slate-100">{{ fmtPeriodo(periodo()) | titlecase }}</div>
+      <button type="button" class="p-2 rounded-md bg-white text-slate-700 hover:bg-slate-100 cursor-pointer"
+              (click)="nextMes()" aria-label="Mes siguiente">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Totales del mes -->
+  <div class="rounded-2xl p-4 border bg-slate-900/60 border-white/10">
+    <div class="text-sm text-slate-400">Gasto total del mes</div>
+    <div class="text-2xl font-semibold text-slate-100">{{ totalMes() | currency:'DOP':'symbol':'1.0-0' }}</div>
+  </div>
+
+  <!-- Charts -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+      <div class="text-sm font-medium text-slate-100 mb-2">Distribución (%)</div>
+      <div echarts [options]="pieOptions()" class="h-80 w-full"></div>
+    </div>
+
+    <div class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+      <div class="text-sm font-medium text-slate-100 mb-2">Top por monto</div>
+      <div echarts [options]="barOptions()" class="h-80 w-full"></div>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+    <div class="text-sm font-medium text-slate-100 mb-3">Detalle</div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[560px] text-sm">
+        <thead class="text-slate-400">
+          <tr class="border-b border-white/10">
+            <th class="py-2 text-left w-56">Categoría</th>
+            <th class="py-2 text-left w-36">Monto</th>
+            <th class="py-2 text-left w-28">% del mes</th>
+            <th class="py-2 text-left">Progreso</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @if (!filas().length) {
+            <tr><td class="py-4 text-slate-400" colspan="4">Sin datos en este período.</td></tr>
+          } @else {
+            @for (f of filas(); track f.id) {
+              <tr class="border-b border-white/5 hover:bg-slate-800/40">
+                <td class="py-2">
+                  <div class="flex items-center gap-2">
+                    <span class="h-3 w-3 rounded-sm border border-white/10"
+                          [ngStyle]="{ 'background-color': f.color || '#22C55E' }"></span>
+                    <span class="text-slate-100">{{ f.nombre }}</span>
+                  </div>
+                </td>
+                <td class="py-2 text-slate-300">{{ f.total | currency:'DOP':'symbol':'1.0-0' }}</td>
+                <td class="py-2">{{ (f.total / (totalMes() || 1) * 100) | number:'1.0-0' }}%</td>
+                <td class="py-2">
+                  <div class="w-full h-2 rounded bg-slate-800 overflow-hidden">
+                    <div class="h-2 bg-emerald-500/80"
+                         [style.width.%]="(f.total / (totalMes() || 1) * 100)"></div>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

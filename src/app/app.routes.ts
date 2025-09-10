@@ -33,8 +33,20 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/cuentas/cuentas').then((c) => c.Cuentas)
       },
       {
+        path: 'presupuestos',
+        loadComponent: () => import('./pages/presupuestos/presupuestos').then((c) => c.Presupuestos)
+      },
+      {
         path: 'transacciones',
         loadComponent: () => import('./pages/transacciones/transacciones').then((c) => c.Transacciones)
+      },
+      {
+        path: 'resumen-categoria',
+        loadComponent: () => import('./pages/resumen-categoria/resumen-categoria').then((c) => c.ResumenCategoria)
+      },
+      {
+        path: 'saldos',
+        loadComponent: () => import('./pages/saldos-periodo/saldos-periodo').then((c) => c.SaldosPeriodo)
       },
       { path: '**', redirectTo: 'dashboard' },
     ],
