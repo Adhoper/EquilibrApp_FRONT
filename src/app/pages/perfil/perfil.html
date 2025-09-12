@@ -1,1 +1,176 @@
-<p>perfil works!</p>
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div class="flex items-center gap-4">
+      <div class="h-12 w-12 rounded-full bg-emerald-500/10 border border-emerald-400/30 grid place-items-center">
+        <span class="text-emerald-300 font-semibold text-lg">
+          {{ (f.nombre.value || 'U').slice(0,1) | uppercase }}
+        </span>
+      </div>
+      <div>
+        <h2 class="text-xl font-semibold text-slate-100">Perfil</h2>
+        <div class="text-xs text-slate-400">Gestiona tu nombre y contraseña</div>
+      </div>
+    </div>
+
+    <a routerLink="/dashboard" class="text-sm text-emerald-400 hover:underline cursor-pointer">
+      Volver al dashboard
+    </a>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" novalidate class="grid lg:grid-cols-3 gap-6">
+
+    <!-- Card: Datos básicos -->
+    <div class="lg:col-span-1 rounded-2xl bg-slate-900/60 p-5 border border-white/10">
+      <div class="mb-4">
+        <div class="text-sm font-medium text-slate-200">Datos de la cuenta</div>
+        <div class="text-xs text-slate-400">Tu correo no es editable</div>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm text-slate-300 mb-1">Nombre para mostrar *</label>
+          <input type="text" formControlName="nombre" placeholder="Tu nombre"
+                 class="w-full rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 outline-none
+                        focus:ring-2 focus:ring-emerald-400 text-slate-100 placeholder-slate-500">
+          @if (isInvalid('nombre')) {
+            <p class="mt-1 text-xs text-rose-400">Ingresa un nombre válido (mínimo 2 caracteres).</p>
+          }
+        </div>
+
+        <div>
+          <label class="block text-sm text-slate-300 mb-1">Correo</label>
+          <input type="email" formControlName="correo" readonly
+                 class="w-full rounded-lg border border-white/10 bg-slate-900/50 px-3 py-2 text-slate-300 cursor-not-allowed">
+          <p class="mt-1 text-[11px] text-slate-400">No es editable.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card: Contraseña -->
+    <div class="lg:col-span-2 rounded-2xl bg-slate-900/60 p-5 border border-white/10">
+      <div class="mb-4 flex items-center justify-between">
+        <div>
+          <div class="text-sm font-medium text-slate-200">Cambiar contraseña</div>
+          <div class="text-xs text-slate-400">
+            Escribe una nueva contraseña para activar esta sección.
+          </div>
+        </div>
+        <button type="button"
+                class="px-3 py-1.5 rounded-lg border border-white/10 bg-slate-800 text-slate-200 hover:bg-slate-700 cursor-pointer"
+                (click)="cancelarCambioPass()">
+          Limpiar
+        </button>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-4">
+        <!-- Actual -->
+        <div>
+          <label class="block text-sm text-slate-300 mb-1">Contraseña actual</label>
+          <div class="relative">
+            <input [type]="showCurrent() ? 'text' : 'password'" formControlName="contrasenaActual"
+                   class="w-full rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 outline-none
+                          focus:ring-2 focus:ring-emerald-400 text-slate-100">
+            <button type="button"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer"
+                    (click)="showCurrent.set(!showCurrent())" [attr.aria-pressed]="showCurrent()">
+              @if (showCurrent()) {
+                <!-- ojo abierto -->
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12z"/>
+                  <circle cx="12" cy="12" r="3" stroke-width="2"/>
+                </svg>
+              } @else {
+                <!-- ojo cerrado -->
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 3l18 18M10.58 10.58A3 3 0 0113.42 13.4M6.53 6.53C3.9 8.05 2.25 10.5 2.25 10.5S5.75 17.5 12 17.5c1.58 0 3-.3 4.26-.82M9.75 5.75C10.47 5.6 11.22 5.5 12 5.5c6.25 0 9.75 7 9.75 7s-.73 1.5-2.27 3.03"/>
+                </svg>
+              }
+            </button>
+          </div>
+          @if (isInvalid('contrasenaActual')) {
+            <p class="mt-1 text-xs text-rose-400">Requerida cuando cambias la contraseña.</p>
+          } @else {
+            <p class="mt-1 text-[11px] text-slate-500">Déjala vacía si no cambiarás la contraseña.</p>
+          }
+        </div>
+
+        <!-- Nueva -->
+        <div>
+          <label class="block text-sm text-slate-300 mb-1">Nueva contraseña</label>
+          <div class="relative">
+            <input [type]="showNew() ? 'text' : 'password'" formControlName="contrasenaNueva"
+                   class="w-full rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 outline-none
+                          focus:ring-2 focus:ring-emerald-400 text-slate-100">
+            <button type="button"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer"
+                    (click)="showNew.set(!showNew())" [attr.aria-pressed]="showNew()">
+              @if (showNew()) {
+                <!-- ojo abierto -->
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12z"/>
+                  <circle cx="12" cy="12" r="3" stroke-width="2"/>
+                </svg>
+              } @else {
+                <!-- ojo cerrado -->
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 3l18 18M10.58 10.58A3 3 0 0113.42 13.4M6.53 6.53C3.9 8.05 2.25 10.5 2.25 10.5S5.75 17.5 12 17.5c1.58 0 3-.3 4.26-.82M9.75 5.75C10.47 5.6 11.22 5.5 12 5.5c6.25 0 9.75 7 9.75 7s-.73 1.5-2.27 3.03"/>
+                </svg>
+              }
+            </button>
+          </div>
+          @if (isInvalid('contrasenaNueva')) {
+            <p class="mt-1 text-xs text-rose-400">Debe tener al menos 6 caracteres.</p>
+          }
+        </div>
+
+        <!-- Confirmar -->
+        <div>
+          <label class="block text-sm text-slate-300 mb-1">Confirmar nueva</label>
+          <div class="relative">
+            <input [type]="showConfirm() ? 'text' : 'password'" formControlName="confirmarNueva"
+                   class="w-full rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 outline-none
+                          focus:ring-2 focus:ring-emerald-400 text-slate-100">
+            <button type="button"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer"
+                    (click)="showConfirm.set(!showConfirm())" [attr.aria-pressed]="showConfirm()">
+              @if (showConfirm()) {
+                <!-- ojo abierto -->
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12z"/>
+                  <circle cx="12" cy="12" r="3" stroke-width="2"/>
+                </svg>
+              } @else {
+                <!-- ojo cerrado -->
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 3l18 18M10.58 10.58A3 3 0 0113.42 13.4M6.53 6.53C3.9 8.05 2.25 10.5 2.25 10.5S5.75 17.5 12 17.5c1.58 0 3-.3 4.26-.82M9.75 5.75C10.47 5.6 11.22 5.5 12 5.5c6.25 0 9.75 7 9.75 7s-.73 1.5-2.27 3.03"/>
+                </svg>
+              }
+            </button>
+          </div>
+          @if (form.errors?.['mismatch'] && (f.confirmarNueva.dirty || f.confirmarNueva.touched)) {
+            <p class="mt-1 text-xs text-rose-400">Las contraseñas no coinciden.</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="lg:col-span-3 flex items-center justify-end gap-2">
+      <a routerLink="/dashboard"
+         class="px-4 py-2 rounded-lg border border-white/10 bg-slate-800 text-slate-200 hover:bg-slate-700 cursor-pointer">
+        Cancelar
+      </a>
+      <button type="submit"
+              class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer">
+        Guardar cambios
+      </button>
+    </div>
+  </form>
+</div>

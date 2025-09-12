@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { AfterViewInit, ApplicationRef, Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
 
 import { AuthService } from '../../services/AuthService.service';
@@ -13,7 +13,7 @@ import { ToastService, ToastLevel } from '../../services/toast.service';
 import { SwalService } from '../../services/swal.service';
 import { LoaderService } from '../../services/loader.service';
 
-import { finalize, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { finalize, debounceTime, distinctUntilChanged, filter, take } from 'rxjs/operators';
 import { Subscription, startWith } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -34,7 +34,7 @@ type TxItem = {
   imports: [CommonModule, ReactiveFormsModule, RouterLink, NgxPaginationModule],
   templateUrl: './transacciones.html',
 })
-export class Transacciones implements OnInit, OnDestroy {
+export class Transacciones implements OnInit, OnDestroy, AfterViewInit {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private txSrv = inject(TransaccionService);
@@ -44,8 +44,33 @@ export class Transacciones implements OnInit, OnDestroy {
   private toast = inject(ToastService);
   private swal = inject(SwalService);
   private loader = inject(LoaderService);
+  private route = inject(ActivatedRoute);
+  private appRef = inject(ApplicationRef);
 
   private subs = new Subscription();
+
+  // —— Control de scroll diferido ——
+  private readonly anchorId = 'all-transacciones';
+  private shouldScrollToAll = false;
+
+  // Flags de carga (se ponen en true en finalize() de cada petición)
+  private catsLoaded = signal(false);
+  private cuentasLoadedSig = signal(false);
+  private recientesLoadedSig = signal(false);
+  private listLoadedSig = signal(false);
+
+  // Cuando todo está cargado
+  private allLoaded = computed(() =>
+    this.catsLoaded() && this.cuentasLoadedSig() && this.recientesLoadedSig() && this.listLoadedSig()
+  );
+
+  ngAfterViewInit(): void {
+    // Si el fragmento ya venía en la URL, márcalo
+    if (this.route.snapshot.fragment === this.anchorId) {
+      this.shouldScrollToAll = true;
+      this.maybeScrollToAll();
+    }
+  }
 
   user = this.auth.getUsuario();
   idUsuario = this.user?.idUsuario ?? 0;
@@ -107,6 +132,14 @@ export class Transacciones implements OnInit, OnDestroy {
   };
 
   ngOnInit(): void {
+    // Si el fragment cambia tras montar, actualizar intención de scroll
+    this.subs.add(
+      this.route.fragment.subscribe(f => {
+        this.shouldScrollToAll = (f === this.anchorId);
+        this.maybeScrollToAll();
+      })
+    );
+
     this.cargarSelects();
     this.cargarRecientes();
 
@@ -133,10 +166,11 @@ export class Transacciones implements OnInit, OnDestroy {
 
   // ------ Cargas auxiliares ------
   private cargarSelects() {
+    // Categorías
     this.loader.show();
     this.catSrv
       .Listar(this.idUsuario)
-      .pipe(finalize(() => this.loader.hide()))
+      .pipe(finalize(() => { this.loader.hide(); this.catsLoaded.set(true); this.maybeScrollToAll(); }))
       .subscribe({
         next: (r: any) => {
           const list = r?.dataList ?? r ?? [];
@@ -147,10 +181,11 @@ export class Transacciones implements OnInit, OnDestroy {
         error: () => this.swal.error('Error', 'No se pudieron cargar las categorías.'),
       });
 
+    // Cuentas
     this.loader.show();
     this.ctaSrv
       .Listar(this.idUsuario)
-      .pipe(finalize(() => this.loader.hide()))
+      .pipe(finalize(() => { this.loader.hide(); this.cuentasLoadedSig.set(true); this.maybeScrollToAll(); }))
       .subscribe({
         next: (r: any) => {
           const list = r?.dataList ?? r ?? [];
@@ -173,7 +208,7 @@ export class Transacciones implements OnInit, OnDestroy {
         tamPagina: 10,
         soloActivas: true,
       })
-      .pipe(finalize(() => this.loader.hide()))
+      .pipe(finalize(() => { this.loader.hide(); this.recientesLoadedSig.set(true); this.maybeScrollToAll(); }))
       .subscribe({
         next: (r: any) => {
           const list = (r?.dataList ?? r ?? []).map(this.mapTx) as TxItem[];
@@ -183,7 +218,7 @@ export class Transacciones implements OnInit, OnDestroy {
       });
   }
 
-  // Listado paginado
+  // Listado paginado (traigo todo el mes)
   cargarListado() {
     this.loader.show();
     this.txSrv
@@ -193,9 +228,8 @@ export class Transacciones implements OnInit, OnDestroy {
         pagina: 1,
         tamPagina: this.FETCH_ALL, // <<— traigo todo el mes
         soloActivas: true,
-        // buscar: undefined            // filtro en front, no en el SP
       })
-      .pipe(finalize(() => this.loader.hide()))
+      .pipe(finalize(() => { this.loader.hide(); this.listLoadedSig.set(true); this.maybeScrollToAll(); }))
       .subscribe({
         next: (r: any) => {
           const src = r?.dataList ?? r ?? [];
@@ -225,11 +259,14 @@ export class Transacciones implements OnInit, OnDestroy {
   prevMes() {
     this.periodo.set(this.shiftMes(this.periodo(), -1));
     this.pagina.set(1);
+    // reset flags relevantes y recargar
+    this.listLoadedSig.set(false);
     this.cargarListado();
   }
   nextMes() {
     this.periodo.set(this.shiftMes(this.periodo(), 1));
     this.pagina.set(1);
+    this.listLoadedSig.set(false);
     this.cargarListado();
   }
 
@@ -241,15 +278,66 @@ export class Transacciones implements OnInit, OnDestroy {
     this.buscarCtrl.setValue('');
   } // dispara el valueChanges
 
-  // Cambiar página (ngx-pagination server-side)
+  // Cambiar página (client-side)
   pageChanged(p: number) {
     this.pagina.set(p);
   }
 
-  // Scroll desde “Ver todas”
+  // ===== Scroll a la tabla completa =====
+  private maybeScrollToAll() {
+    if (!this.shouldScrollToAll) return;
+    if (!this.allLoaded()) return;
+
+    // Espera a estabilidad de Angular y a un frame de pintura
+    this.appRef.isStable.pipe(filter((s: boolean) => s), take(1)).subscribe(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          this.scrollToAll();
+          this.shouldScrollToAll = false; // evita múltiples scrolls
+        });
+      });
+    });
+  }
+
   scrollToAll() {
-    const el = document.getElementById('all-transacciones');
-    el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const el = document.getElementById(this.anchorId);
+    if (!el) return;
+
+    // 1) Usa contenedor principal si existe; 2) fallback a window
+    const container = document.getElementById('app-main-scroll') || this.getScrollableParent(el);
+
+    if (container && container !== document.body && container !== document.documentElement) {
+      const top = this.offsetTopWithin(el, container) - 8; // pequeño offset
+      (container as HTMLElement).scrollTo({ top, behavior: 'smooth' });
+    } else {
+      // offset por header fijo (ajusta si tu header cambia de altura)
+      const headerOffset = 64;
+      const y = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  }
+
+  /** Sube por la jerarquía hasta encontrar un ancestro scrollable */
+  private getScrollableParent(el: HTMLElement | null): HTMLElement | null {
+    let node = el?.parentElement || null;
+    while (node) {
+      const style = getComputedStyle(node);
+      const canScroll = /(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight;
+      if (canScroll) return node;
+      node = node.parentElement;
+    }
+    return null;
+  }
+
+  /** offsetTop relativo al contenedor (no a la página) */
+  private offsetTopWithin(target: HTMLElement, container: Element): number {
+    let y = 0;
+    let node: HTMLElement | null = target;
+    while (node && node !== container && node.offsetTop !== undefined) {
+      y += node.offsetTop;
+      node = node.offsetParent as HTMLElement | null;
+    }
+    return y;
   }
 
   // ---- Guardar ----
@@ -288,6 +376,8 @@ export class Transacciones implements OnInit, OnDestroy {
             this.swal.success('Transacción guardada', res?.message);
             this.resetForm(model.tipoTransaccion);
             this.cargarRecientes();
+            // Al guardar puede cambiar el listado; marca como no-cargado y recarga
+            this.listLoadedSig.set(false);
             this.cargarListado();
             this.refrescarAlertasConToasts(model.idCategoria);
           } else {

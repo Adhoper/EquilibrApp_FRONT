@@ -1,30 +1,30 @@
 <div class="flex h-full min-h-0 flex-col">
-  <!-- Branding -->
-  <div class="px-5 py-4 flex items-center gap-2 border-b border-slate-800">
-    <span class="text-2xl font-extrabold text-emerald-400">EA</span>
-    <span class="font-semibold tracking-wide">EquilibrApp</span>
-  </div>
-
-  <!-- Avatar/usuario -->
-  <div class="px-5 py-6 flex flex-col items-center gap-3">
-    <div class="h-20 w-20 rounded-full border-4 border-emerald-400/80 grid place-items-center text-xs text-slate-300">
-      {{ (userName || 'EA')[0] | uppercase }}
+  <!-- Usuario -->
+  <div class="px-5 pt-5 pb-6">
+    <div class="flex items-center gap-3">
+      <div class="p-[2px] rounded-full bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400">
+        <div class="h-14 w-14 rounded-full bg-slate-950/90 grid place-items-center text-base font-semibold text-slate-200">
+          {{ initial }}
+        </div>
+      </div>
+      <div class="min-w-0">
+        <div class="text-slate-100 font-medium truncate">{{ userName || 'Usuario' }}</div>
+        <div class="text-[11px] text-slate-400">Bienvenido/a 👋</div>
+      </div>
     </div>
-    <p class="text-slate-300 text-sm">{{ userName }}</p>
   </div>
 
   <!-- Navegación (con scroll si crece) -->
-  <nav class="px-3 mt-2 space-y-4 flex-1 min-h-0 overflow-y-auto">
-    <!-- Grupo: Principal -->
+  <nav class="px-3 mt-1 space-y-4 flex-1 min-h-0 overflow-y-auto">
+    <!-- Principal -->
     <div>
       <p class="px-3 text-[11px] uppercase tracking-wide text-slate-500 mb-1">Principal</p>
       @for (item of principal; track item.path) {
-        <a
-          [routerLink]="item.path"
-          routerLinkActive="bg-emerald-500/20 text-white border border-emerald-500/40"
-          [routerLinkActiveOptions]="{ exact: true }"
-          (click)="onNav()"
-          class="cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800/60 hover:text-white">
+        <a [routerLink]="item.path"
+           routerLinkActive="bg-emerald-500/20 text-white border border-emerald-500/40"
+           [routerLinkActiveOptions]="{ exact: true }"
+           (click)="onNav()"
+           class="cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800/60 hover:text-white">
           <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="svg(item.icon)" />
           </svg>
@@ -33,15 +33,14 @@
       }
     </div>
 
-    <!-- Grupo: Gestión -->
+    <!-- Gestión -->
     <div>
       <p class="px-3 text-[11px] uppercase tracking-wide text-slate-500 mb-1">Gestión</p>
       @for (item of gestion; track item.path) {
-        <a
-          [routerLink]="item.path"
-          routerLinkActive="bg-emerald-500/20 text-white border border-emerald-500/40"
-          (click)="onNav()"
-          class="cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800/60 hover:text-white">
+        <a [routerLink]="item.path"
+           routerLinkActive="bg-emerald-500/20 text-white border border-emerald-500/40"
+           (click)="onNav()"
+           class="cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800/60 hover:text-white">
           <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="svg(item.icon)" />
           </svg>
@@ -50,15 +49,14 @@
       }
     </div>
 
-    <!-- Grupo: Reportes -->
+    <!-- Reportes -->
     <div>
       <p class="px-3 text-[11px] uppercase tracking-wide text-slate-500 mb-1">Reportes</p>
       @for (item of reportes; track item.path) {
-        <a
-          [routerLink]="item.path"
-          routerLinkActive="bg-emerald-500/20 text-white border border-emerald-500/40"
-          (click)="onNav()"
-          class="cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800/60 hover:text-white">
+        <a [routerLink]="item.path"
+           routerLinkActive="bg-emerald-500/20 text-white border border-emerald-500/40"
+           (click)="onNav()"
+           class="cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800/60 hover:text-white">
           <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="svg(item.icon)" />
           </svg>
@@ -67,15 +65,14 @@
       }
     </div>
 
-    <!-- Grupo: Ajustes -->
+    <!-- Ajustes -->
     <div>
       <p class="px-3 text-[11px] uppercase tracking-wide text-slate-500 mb-1">Ajustes</p>
       @for (item of ajustes; track item.path) {
-        <a
-          [routerLink]="item.path"
-          routerLinkActive="bg-emerald-500/20 text-white border border-emerald-500/40"
-          (click)="onNav()"
-          class="cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800/60 hover:text-white">
+        <a [routerLink]="item.path"
+           routerLinkActive="bg-emerald-500/20 text-white border border-emerald-500/40"
+           (click)="onNav()"
+           class="cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800/60 hover:text-white">
           <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="svg(item.icon)" />
           </svg>
@@ -86,7 +83,7 @@
   </nav>
 
   <!-- Footer -->
-  <div class="mt-auto p-4 text-xs text-slate-500">
+  <div class="mt-auto p-4 text-[11px] text-slate-500 border-t border-slate-800/70">
     © 2025 EquilibrApp
   </div>
 </div>

@@ -75,10 +75,16 @@ export class Cuentas implements OnInit, OnDestroy {
   editando = computed(() => this.idCuentaSig() != null);
 
   // listado en cliente
-  listaFiltrada = computed(() => {
-    const arr = this.cuentas() || [];
-    return [...arr].sort((a, b) => a.nombreCuenta.localeCompare(b.nombreCuenta));
-  });
+listaFiltrada = computed(() => {
+  const arr = this.cuentas() || [];
+  const soloInactivas = this.filtro() === 'inactivas';
+
+  const filtradas = arr.filter(c =>
+    (c.estatus ?? 'A') === (soloInactivas ? 'I' : 'A')
+  );
+
+  return filtradas.sort((a, b) => a.nombreCuenta.localeCompare(b.nombreCuenta));
+});
 
   ngOnInit(): void {
     // debounce de búsqueda

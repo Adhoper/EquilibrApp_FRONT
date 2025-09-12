@@ -1,27 +1,60 @@
-<div class="space-y-6">
+<div class="space-y-6 overflow-x-hidden">
   <!-- Cabecera: mes y acciones -->
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
     <div class="flex items-center gap-3">
-      <button class="p-2 rounded-md bg-slate-800 text-slate-200 hover:bg-slate-700 border border-white/10 cursor-pointer"
-              (click)="changeMonth(-1)" aria-label="Mes anterior">
-        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      <button
+        class="p-2 rounded-md bg-slate-800 text-slate-200 hover:bg-slate-700 border border-white/10 cursor-pointer"
+        (click)="changeMonth(-1)"
+        aria-label="Mes anterior"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
       </button>
       <div class="text-xl font-semibold text-slate-100">{{ fmtMonth(current()) | titlecase }}</div>
-      <button class="p-2 rounded-md bg-slate-800 text-slate-200 hover:bg-slate-700 border border-white/10 cursor-pointer"
-              (click)="changeMonth(1)" aria-label="Mes siguiente">
-        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <button
+        class="p-2 rounded-md bg-slate-800 text-slate-200 hover:bg-slate-700 border border-white/10 cursor-pointer"
+        (click)="changeMonth(1)"
+        aria-label="Mes siguiente"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
       </button>
     </div>
 
     <div class="flex items-center gap-2">
-      <a [routerLink]="['/transacciones']"
-         class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2">
-        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m7-7H5"/></svg>
+      <a
+        [routerLink]="['/transacciones']"
+        class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 5v14m7-7H5"
+          />
+        </svg>
         Nueva transacción
       </a>
-      <a routerLink="/presupuestos"
-         class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 border border-white/10 px-4 py-2">
-        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16v4H4zM4 14h10v4H4z"/></svg>
+      <a
+        routerLink="/presupuestos"
+        class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 border border-white/10 px-4 py-2"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16v4H4zM4 14h10v4H4z"
+          />
+        </svg>
         Gestionar presupuestos
       </a>
     </div>
@@ -32,21 +65,23 @@
     <div class="rounded-2xl bg-slate-900/60 p-5 border border-white/10">
       <div class="text-sm text-slate-400">Ingresos</div>
       <div class="mt-1 text-2xl font-semibold text-emerald-400">
-        {{ totales().totalIngresos | currency:'DOP':'symbol':'1.0-0' }}
+        {{ totales().totalIngresos | currency : 'DOP' : 'symbol' : '1.0-0' }}
       </div>
     </div>
     <div class="rounded-2xl bg-slate-900/60 p-5 border border-white/10">
       <div class="text-sm text-slate-400">Gastos</div>
       <div class="mt-1 text-2xl font-semibold text-rose-400">
-        {{ totales().totalGastos | currency:'DOP':'symbol':'1.0-0' }}
+        {{ totales().totalGastos | currency : 'DOP' : 'symbol' : '1.0-0' }}
       </div>
     </div>
     <div class="rounded-2xl bg-slate-900/60 p-5 border border-white/10">
       <div class="text-sm text-slate-400">Balance</div>
-      <div class="mt-1 text-2xl font-semibold"
-           [class.text-emerald-400]="totales().balance >= 0"
-           [class.text-rose-400]="totales().balance < 0">
-        {{ totales().balance | currency:'DOP':'symbol':'1.0-0' }}
+      <div
+        class="mt-1 text-2xl font-semibold"
+        [class.text-emerald-400]="totales().balance >= 0"
+        [class.text-rose-400]="totales().balance < 0"
+      >
+        {{ totales().balance | currency : 'DOP' : 'symbol' : '1.0-0' }}
       </div>
     </div>
   </div>
@@ -59,82 +94,59 @@
         <h3 class="font-semibold text-slate-100">Gasto por categoría</h3>
       </div>
 
-      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-        <!-- Donut -->
-        <div class="flex items-center justify-center">
-          <div class="relative w-40 aspect-square min-w-[8rem]">
-            <div class="absolute inset-0 rounded-full ring-1 ring-white/10"
-                 [ngStyle]="donutStyle()"
-                 style="background: var(--donut);"></div>
-            <div class="absolute inset-3 rounded-full bg-slate-950/70 ring-1 ring-white/10"></div>
-            <div class="absolute inset-0 grid place-items-center">
-              <div class="text-center">
-                <div class="text-xs text-slate-400">Gasto total</div>
-                <div class="text-lg font-semibold text-slate-100">
-                  {{ totales().totalGastos | currency:'DOP':'symbol':'1.0-0' }}
-                </div>
-              </div>
-            </div>
-          </div>
+      <!-- Donut centrado + leyenda debajo -->
+      <div class="mt-4 flex flex-col items-center gap-5">
+        <!-- Donut (ECharts) -->
+        <div class="w-full max-w-xs sm:max-w-sm">
+          <div echarts [options]="pieOptions()" class="h-56 w-full"></div>
         </div>
 
-        <!-- Leyenda -->
-        <div class="space-y-2">
+        <!-- Leyenda con montos (debajo) -->
+        <div class="w-full border-t border-white/10 pt-4">
           @if (!resumenCat().length) {
-            <div class="text-sm text-slate-400">Sin datos para este período.</div>
+          <div class="text-sm text-slate-400">Sin datos para este período.</div>
           } @else {
-            @for (c of resumenCat(); track c.idCategoria) {
-              <div class="flex items-center justify-between gap-3">
-                <div class="flex items-center gap-2 min-w-0">
-                  <span class="h-3 w-3 rounded-sm border border-white/10"
-                        [ngStyle]="{'background-color': c.colorHexadecimal || palette[$index % palette.length]}"></span>
-                  <span class="text-sm text-slate-200 truncate">{{ c.categoria }}</span>
-                </div>
-                <div class="text-sm text-slate-300 whitespace-nowrap">
-                  {{ c.totalGasto | currency:'DOP':'symbol':'1.0-0' }}
-                </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            @for (c of resumenCat(); track c.idCategoria; let i = $index) {
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2 min-w-0">
+                <span
+                  class="h-3 w-3 rounded-sm border border-white/10"
+                  [ngStyle]="{
+                    'background-color': c.colorHexadecimal || palette[i % palette.length]
+                  }"
+                ></span>
+                <span class="text-sm text-slate-200 truncate">{{ c.categoria }}</span>
               </div>
+              <div class="text-sm text-slate-300 whitespace-nowrap">
+                {{ c.totalGasto | currency : 'DOP' : 'symbol' : '1.0-0' }}
+              </div>
+            </div>
             }
+          </div>
           }
         </div>
       </div>
     </div>
 
-    <!-- Presupuestos por categoría -->
+    <!-- Presupuestos por categoría (ECharts horizontal) -->
     <div class="rounded-2xl bg-slate-900/60 p-5 border border-white/10 lg:col-span-2">
       <div class="flex items-center justify-between">
         <h3 class="font-semibold text-slate-100">Uso de presupuestos por categoría</h3>
-        <a routerLink="/presupuestos" class="text-emerald-400 hover:underline cursor-pointer text-sm">Configurar</a>
+        <a
+          routerLink="/presupuestos"
+          class="text-emerald-400 hover:underline cursor-pointer text-sm"
+          >Configurar</a
+        >
       </div>
 
-      <div class="mt-4 space-y-4">
+      <div class="mt-3">
         @if (!presuCat().length) {
-          <div class="text-sm text-slate-400">No has definido presupuestos por categoría para este mes.</div>
+        <div class="text-sm text-slate-400">
+          No has definido presupuestos por categoría para este mes.
+        </div>
         } @else {
-          @for (p of presuCat(); track p.idPresupuesto) {
-            <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-              <div class="flex-1">
-                <div class="flex items-center justify-between text-sm">
-                  <span class="font-medium text-slate-200">{{ p.categoria }}</span>
-                  <span class="text-slate-400">{{ p.gastado | currency:'DOP':'symbol':'1.0-0' }} / {{ p.montoLimite | currency:'DOP':'symbol':'1.0-0' }}</span>
-                </div>
-                <div class="mt-2 h-2 rounded-full bg-slate-800/40 overflow-hidden">
-                  <div class="h-2 rounded-full"
-                       [ngClass]="{
-                         'bg-emerald-500': p.porcentaje < 75,
-                         'bg-amber-500': p.porcentaje >= 75 && p.porcentaje < 90,
-                         'bg-orange-500': p.porcentaje >= 90 && p.porcentaje < 100,
-                         'bg-red-500': p.porcentaje >= 100
-                       }"
-                       [style.width.%]="clampPct(p.porcentaje)"></div>
-                </div>
-              </div>
-              <span class="shrink-0 rounded-full border border-white/10 bg-slate-800/60 text-slate-200 px-2.5 py-1 text-xs font-medium"
-                    [ngClass]="chipClass(p.porcentaje)">
-                {{ (p.porcentaje | number:'1.0-0') }}%
-              </span>
-            </div>
-          }
+        <div echarts [options]="budgetBarOptions()" class="h-72 w-full"></div>
         }
       </div>
 
@@ -143,21 +155,25 @@
         <div class="flex items-center justify-between mb-2">
           <div class="font-medium text-slate-200">Presupuesto global</div>
           @if (presuGlobal()) {
-            <span class="rounded-full border border-white/10 bg-slate-800/60 text-slate-200 px-2.5 py-1 text-xs font-medium"
-                  [ngClass]="chipClass(presuGlobal()!.porcentaje)">
-              {{ presuGlobal()!.porcentaje | number:'1.0-0' }}%
-            </span>
+          <span
+            class="rounded-full border border-white/10 bg-slate-800/60 text-slate-200 px-2.5 py-1 text-xs font-medium"
+            [ngClass]="chipClass(presuGlobal()!.porcentaje)"
+          >
+            {{ presuGlobal()!.porcentaje | number : '1.0-0' }}%
+          </span>
           }
         </div>
         <div class="text-sm text-slate-400">
           @if (presuGlobal()) {
-            {{ presuGlobal()!.gastado | currency:'DOP':'symbol':'1.0-0' }} de
-            {{ presuGlobal()!.montoLimiteGlobal | currency:'DOP':'symbol':'1.0-0' }}
+          {{ presuGlobal()!.gastado | currency : 'DOP' : 'symbol' : '1.0-0' }} de
+          {{ presuGlobal()!.montoLimiteGlobal | currency : 'DOP' : 'symbol' : '1.0-0' }}
           } @else { Sin presupuesto global definido. }
         </div>
         <div class="mt-2 h-2 rounded-full bg-slate-800/40 overflow-hidden border border-white/10">
-          <div class="h-2 rounded-full bg-emerald-500"
-               [style.width.%]="clampPct(presuGlobal()?.porcentaje)"></div>
+          <div
+            class="h-2 rounded-full bg-emerald-500"
+            [style.width.%]="clampPct(presuGlobal()?.porcentaje)"
+          ></div>
         </div>
       </div>
     </div>
@@ -169,64 +185,89 @@
     <div class="rounded-2xl bg-slate-900/60 p-5 border border-white/10 lg:col-span-1">
       <div class="flex items-center justify-between">
         <h3 class="font-semibold text-slate-100">Cuentas</h3>
-        <a routerLink="/cuentas" class="text-emerald-400 hover:underline cursor-pointer text-sm">Gestionar</a>
+        <a routerLink="/cuentas" class="text-emerald-400 hover:underline cursor-pointer text-sm"
+          >Gestionar</a
+        >
       </div>
       <div class="mt-4 space-y-3">
         @if (!cuentas().length) {
-          <div class="text-sm text-slate-400">Aún no tienes cuentas.</div>
-        } @else {
-          @for (c of cuentas(); track c.idCuenta) {
-            <div class="flex items-center justify-between rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
-              <div class="text-sm font-medium text-slate-200">{{ c.nombreCuenta }}</div>
-              <div class="text-sm font-semibold text-slate-100">
-                {{ c.saldoFinal | currency:'DOP':'symbol':'1.0-0' }}
-              </div>
-            </div>
-          }
-        }
+        <div class="text-sm text-slate-400">Aún no tienes cuentas.</div>
+        } @else { @for (c of cuentas(); track c.idCuenta) {
+        <div
+          class="flex items-center justify-between rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2"
+        >
+          <div class="text-sm font-medium text-slate-200">{{ c.nombreCuenta }}</div>
+          <div class="text-sm font-semibold text-slate-100">
+            {{ c.saldoFinal | currency : 'DOP' : 'symbol' : '1.0-0' }}
+          </div>
+        </div>
+        } }
       </div>
     </div>
 
     <!-- Recientes -->
     <div class="rounded-2xl bg-slate-900/60 p-5 border border-white/10 lg:col-span-2">
+      <!-- Últimas transacciones (dashboard) -->
       <div class="flex items-center justify-between">
         <h3 class="font-semibold text-slate-100">Últimas transacciones</h3>
-        <a routerLink="/transacciones" class="text-emerald-400 hover:underline cursor-pointer text-sm">Ver todas</a>
+        <button
+          type="button"
+          (click)="verTodas()"
+          class="text-emerald-400 hover:underline cursor-pointer text-sm"
+        >
+          Ver todas
+        </button>
       </div>
 
       <div class="mt-4 divide-y divide-white/5">
         @if (!recientes().length) {
-          <div class="text-sm text-slate-400">Sin transacciones recientes.</div>
-        } @else {
-          @for (t of recientes(); track t.idTransaccion) {
-            <div class="py-3 flex items-center justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <div class="h-8 w-8 rounded-full grid place-items-center"
-                     [ngClass]="{
-                       'bg-emerald-200/20 text-emerald-400': t.tipoTransaccion === 1,
-                       'bg-rose-200/20 text-rose-400': t.tipoTransaccion === 0
-                     }">
-                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    @if (t.tipoTransaccion === 1) { <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/> }
-                    @else { <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m7 7l-7-7 7-7"/> }
-                  </svg>
-                </div>
-                <div>
-                  <div class="text-sm font-medium text-slate-100">{{ t.categoria }}</div>
-                  <div class="text-xs text-slate-400">
-                    {{ t.cuenta }} · {{ t.fechaTransaccion | date:'mediumDate' }}
-                    @if (t.nota) { · <span class="italic">{{ t.nota }}</span> }
-                  </div>
-                </div>
-              </div>
-              <div class="text-sm font-semibold"
-                   [class.text-emerald-400]="t.tipoTransaccion === 1"
-                   [class.text-rose-400]="t.tipoTransaccion === 0">
-                {{ (t.tipoTransaccion === 1 ? '+' : '-') }}{{ t.monto | currency:'DOP':'symbol':'1.0-0' }}
+        <div class="text-sm text-slate-400">Sin transacciones recientes.</div>
+        } @else { @for (t of recientes(); track t.idTransaccion) {
+        <div class="py-3 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div
+              class="h-8 w-8 rounded-full grid place-items-center"
+              [ngClass]="{
+                'bg-emerald-200/20 text-emerald-400': t.tipoTransaccion === 1,
+                'bg-rose-200/20 text-rose-400': t.tipoTransaccion === 0
+              }"
+            >
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                @if (t.tipoTransaccion === 1) {
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 12h14M12 5l7 7-7 7"
+                />
+                } @else {
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 12H5m7 7l-7-7 7-7"
+                />
+                }
+              </svg>
+            </div>
+            <div>
+              <div class="text-sm font-medium text-slate-100">{{ t.categoria }}</div>
+              <div class="text-xs text-slate-400">
+                {{ t.cuenta }} · {{ t.fechaTransaccion | date : 'mediumDate' }} @if (t.nota) { ·
+                <span class="italic">{{ t.nota }}</span> }
               </div>
             </div>
-          }
-        }
+          </div>
+          <div
+            class="text-sm font-semibold"
+            [class.text-emerald-400]="t.tipoTransaccion === 1"
+            [class.text-rose-400]="t.tipoTransaccion === 0"
+          >
+            {{ t.tipoTransaccion === 1 ? '+' : '-'
+            }}{{ t.monto | currency : 'DOP' : 'symbol' : '1.0-0' }}
+          </div>
+        </div>
+        } }
       </div>
     </div>
   </div>

@@ -1,56 +1,65 @@
-<!-- Pantalla completa, coherente con EquilibrApp -->
-<div class="min-h-[100dvh] bg-slate-900 text-slate-100 relative overflow-hidden">
+<!-- src/app/autenticacion/login/login.html -->
+<div class="min-h-[100dvh] bg-slate-950 text-slate-100 relative overflow-hidden">
   <!-- acento -->
   <div class="h-1 w-full bg-emerald-500"></div>
 
-  <!-- Contenido centrado | en móvil apila, en desktop divide -->
-  <div class="mx-auto max-w-6xl grid md:grid-cols-2 items-center gap-0 min-h-[calc(100dvh-4px)] px-4 sm:px-6">
+  <!-- decor -->
+  <div class="pointer-events-none absolute -top-20 -left-24 h-56 w-56 rounded-full bg-emerald-500/10 blur-3xl"></div>
+  <div class="pointer-events-none absolute bottom-0 right-0 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl"></div>
 
-    <!-- Card de Login (primero en móvil) -->
+  <div class="mx-auto max-w-6xl grid md:grid-cols-2 items-center gap-0 min-h-[calc(100dvh-4px)] px-4 sm:px-6">
+    <!-- Card Login -->
     <div class="flex items-center justify-center py-10 order-1 md:order-2 md:pl-8">
-      <div class="w-full max-w-md bg-white text-slate-900 rounded-2xl shadow-xl p-8">
+      <div class="w-full max-w-md rounded-2xl border border-white/10 bg-slate-900/60 backdrop-blur-md shadow-xl p-8">
         <div class="mb-7">
-          <h3 class="font-semibold text-2xl">Iniciar sesión</h3>
-          <p class="text-slate-500 text-sm">
+          <h3 class="font-semibold text-2xl text-slate-100">Iniciar sesión</h3>
+          <p class="text-slate-400 text-sm">
             ¿No tienes cuenta?
-            <a routerLink="/register" class="text-emerald-600 hover:underline font-medium cursor-pointer">Regístrate</a>
+            <a routerLink="/register"
+               class="text-emerald-400 hover:underline cursor-pointer">Regístrate</a>
           </p>
         </div>
 
-        <!-- ✅ Reactive Forms -->
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5" autocomplete="on">
+          <!-- email -->
           <div>
-            <label class="block text-sm font-medium text-slate-700">Email</label>
+            <label class="block text-sm text-slate-300">Email</label>
             <input
               formControlName="identificadorUsuario"
               type="email"
-              autocomplete="email"
+              name="email"
+              inputmode="email"
+              autocomplete="email username"
+              list="recent-emails"
               placeholder="tucorreo@dominio.com"
-              class="mt-1 w-full rounded-lg bg-slate-100 border border-slate-200 px-4 py-3 text-sm
-                     outline-none focus:bg-white focus:border-emerald-400"
-              [class.border-red-500]="invalid('identificadorUsuario')"
+              class="mt-1 w-full rounded-lg border border-white/10 bg-slate-950/60 px-4 py-3 text-sm
+                     outline-none focus:ring-2 focus:ring-emerald-400 text-slate-100 placeholder-slate-500"
+              [class.border-rose-400]="invalid('identificadorUsuario')"
             />
+            <!-- sugerencias -->
+            <datalist id="recent-emails">
+              <option *ngFor="let e of emailSuggestions" [value]="e"></option>
+            </datalist>
           </div>
 
+          <!-- pass -->
           <div>
-            <label class="block text-sm font-medium text-slate-700">Contraseña</label>
+            <label class="block text-sm text-slate-300">Contraseña</label>
             <div class="relative mt-1">
               <input
                 formControlName="contrasena"
                 [type]="showPassword ? 'text' : 'password'"
                 autocomplete="current-password"
                 placeholder="••••••••"
-                class="w-full rounded-lg bg-slate-100 border border-slate-200 px-4 py-3 text-sm
-                       outline-none focus:bg-white focus:border-emerald-400"
-                [class.border-red-500]="invalid('contrasena')"
+                class="w-full rounded-lg border border-white/10 bg-slate-950/60 px-4 py-3 text-sm
+                       outline-none focus:ring-2 focus:ring-emerald-400 text-slate-100"
+                [class.border-rose-400]="invalid('contrasena')"
               />
               <button
                 type="button"
                 (click)="showPassword=!showPassword"
-                class="absolute inset-y-0 right-0 px-3 text-slate-500 hover:text-slate-700 cursor-pointer"
-                aria-label="Mostrar/ocultar contraseña"
-              >
-                <!-- ojo abierto/cerrado -->
+                class="absolute inset-y-0 right-0 px-3 text-slate-400 hover:text-slate-200 cursor-pointer"
+                aria-label="Mostrar/ocultar contraseña">
                 <svg *ngIf="!showPassword" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -59,62 +68,37 @@
                 </svg>
                 <svg *ngIf="showPassword" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.96 9.96 0 012.223-3.592m3.265-2.29A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.96 9.96 0 01-1.249 2.527M3 3l18 18"/>
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.96 9.96 0 012.223-3.592M3 3l18 18"/>
                 </svg>
               </button>
             </div>
+            <div *ngIf="errorMensaje" class="text-rose-400 text-xs mt-2">{{ errorMensaje }}</div>
           </div>
 
-          <div class="flex items-center justify-between">
-            <a routerLink="/forgot-password" class="text-sm text-emerald-700 hover:underline cursor-pointer">
+          <!-- <div class="flex items-center justify-between">
+            <a routerLink="/forgot-password" class="text-sm text-emerald-400 hover:underline cursor-pointer">
               ¿Olvidaste tu contraseña?
             </a>
-          </div>
-
-          <div *ngIf="errorMensaje" class="text-red-600 text-sm px-1 -mt-2">{{ errorMensaje }}</div>
+          </div> -->
 
           <button
             type="submit"
             [disabled]="loading || loginForm.invalid"
             class="w-full flex justify-center items-center gap-2 bg-emerald-600 hover:bg-emerald-700
                    text-white px-4 py-3 rounded-lg font-semibold transition cursor-pointer
-                   disabled:opacity-60 disabled:cursor-not-allowed"
-          >
+                   disabled:opacity-60 disabled:cursor-not-allowed">
             <span *ngIf="!loading">Ingresar</span>
             <span *ngIf="loading" class="animate-pulse">Ingresando…</span>
           </button>
-
-          <div class="flex items-center gap-3">
-            <div class="h-px flex-1 bg-slate-200"></div>
-            <span class="text-slate-400 text-sm">o</span>
-            <div class="h-px flex-1 bg-slate-200"></div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <button type="button"
-              class="w-full flex items-center justify-center gap-2 border border-slate-300 hover:border-slate-900
-                     hover:bg-slate-900 text-slate-600 hover:text-white px-4 py-3 rounded-lg text-sm transition cursor-pointer">
-              <!-- Google -->
-              <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.27 0 3.198 2.698 1.24 6.65l4.026 3.115Z"/><path fill="#34A853" d="M16.04 18.013c-1.09.703-2.474 1.078-4.04 1.078a7.077 7.077 0 0 1-6.723-4.823l-4.04 3.067A11.965 11.965 0 0 0 12 24c2.933 0 5.735-1.043 7.834-3l-3.793-2.987Z"/><path fill="#4A90E2" d="M19.834 21c2.195-2.048 3.62-5.096 3.62-9 0-.71-.109-1.473-.272-2.182H12v4.637h6.436c-.317 1.559-1.17 2.766-2.395 3.558L19.834 21Z"/><path fill="#FBBC05" d="M5.277 14.268A7.12 7.12 0 0 1 4.909 12c0-.782.125-1.533.357-2.235L1.24 6.65A11.934 11.934 0 0 0 0 12c0 1.92.445 3.73 1.237 5.335l4.04-3.067Z"/></svg>
-              Google
-            </button>
-            <button type="button"
-              class="w-full flex items-center justify-center gap-2 border border-slate-300 hover:border-slate-900
-                     hover:bg-slate-900 text-slate-600 hover:text-white px-4 py-3 rounded-lg text-sm transition cursor-pointer">
-              <!-- Facebook -->
-              <svg class="w-4 h-4" viewBox="0 0 100 100"><path d="M50 2.5c-58.892 1.725-64.898 84.363-7.46 95h14.92c57.451-10.647 51.419-93.281-7.46-95z" fill="#1877f2"/><path d="M57.46 64.104h11.125l2.117-13.814H57.46v-8.965c0-3.779 1.85-7.463 7.781-7.463h6.021V22.101c-12.894-2.323-28.385-1.616-28.722 17.66V50.29H30.417v13.814H42.54V97.5h14.92V64.104z" fill="#f1f1f1"/></svg>
-              Facebook
-            </button>
-          </div>
         </form>
 
-        <p class="mt-6 text-center text-xs text-slate-400">
+        <p class="mt-6 text-center text-[11px] text-slate-400">
           © 2025 EquilibrApp — Todos los derechos reservados.
         </p>
       </div>
     </div>
 
-    <!-- Mensajes/branding (visible también en móvil; pasa a abajo) -->
+    <!-- Branding -->
     <div class="flex items-center justify-center p-8 md:p-10 order-2 md:order-1 md:pr-8">
       <div class="max-w-md">
         <div class="flex items-center gap-3 mb-6">
@@ -122,27 +106,20 @@
           <span class="font-semibold tracking-wide">EquilibrApp</span>
         </div>
         <h1 class="text-3xl font-semibold leading-tight">Bienvenido de vuelta 👋</h1>
-        <p class="mt-3 text-slate-300">
-          Administra tus datos y visualiza el progreso con un panel limpio y rápido.
-        </p>
+        <p class="mt-3 text-slate-300">Administra tus datos con una interfaz rápida y clara.</p>
 
-        <!-- Mensajes de valor reales de la app -->
         <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
           <div class="bg-slate-800/60 rounded-xl p-4">
             <div class="text-emerald-400 font-semibold">Reportes</div>
-            <div class="text-slate-400 mt-1">Gráficas y métricas claras</div>
+            <div class="text-slate-400 mt-1">Gráficas y métricas</div>
           </div>
           <div class="bg-slate-800/60 rounded-xl p-4">
             <div class="text-emerald-400 font-semibold">Presupuestos</div>
-            <div class="text-slate-400 mt-1">Metas y control de gastos</div>
+            <div class="text-slate-400 mt-1">Metas y control</div>
           </div>
           <div class="bg-slate-800/60 rounded-xl p-4">
-            <div class="text-emerald-400 font-semibold">Recordatorios</div>
-            <div class="text-slate-400 mt-1">Alertas para no olvidar</div>
-          </div>
-          <div class="bg-slate-800/60 rounded-xl p-4">
-            <div class="text-emerald-400 font-semibold">Colaboración</div>
-            <div class="text-slate-400 mt-1">Comparte con tu equipo</div>
+            <div class="text-emerald-400 font-semibold">Alertas</div>
+            <div class="text-slate-400 mt-1">No te olvides</div>
           </div>
         </div>
       </div>
