@@ -7,71 +7,55 @@
     </div>
 
     <div class="flex items-center gap-2">
-      <a
-        routerLink="/transacciones"
-        class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2"
-      >
+      <a routerLink="/transacciones"
+         class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2">
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 5v14m7-7H5"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m7-7H5"/>
         </svg>
         Registrar transacción
       </a>
     </div>
   </div>
 
+  <!-- Grid principal -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Formulario -->
-    <div class="lg:col-span-1 rounded-2xl p-5 border bg-slate-900/60 border-white/10">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-2">
-          <h3 class="font-semibold text-slate-100">
+    <!-- ==================== Formulario (agregar/editar) ==================== -->
+    <div class="lg:col-span-1 rounded-2xl p-5 border bg-slate-900/60 border-white/10 min-w-0">
+      <div class="flex items-center justify-between mb-3 min-w-0">
+        <div class="flex items-center gap-2 min-w-0">
+          <h3 class="font-semibold text-slate-100 truncate">
             {{ editando() ? 'Editar categoría' : 'Nueva categoría' }}
           </h3>
           <span
             class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wide"
-            [ngClass]="
-              editando()
-                ? 'border border-amber-300/30 bg-amber-400/10 text-amber-200'
-                : 'border border-emerald-300/30 bg-emerald-400/10 text-emerald-200'
-            "
-          >
+            [ngClass]="editando()
+              ? 'border border-amber-300/30 bg-amber-400/10 text-amber-200'
+              : 'border border-emerald-300/30 bg-emerald-400/10 text-emerald-200'">
             {{ editando() ? 'Editando' : 'Nueva' }}
           </span>
         </div>
 
         @if (editando()) {
-        <button
-          type="button"
-          class="text-xs text-emerald-300 hover:text-emerald-200 underline cursor-pointer"
-          (click)="limpiar()"
-        >
-          Crear nueva
-        </button>
+          <button type="button"
+                  class="text-xs text-emerald-300 hover:text-emerald-200 underline cursor-pointer"
+                  (click)="limpiar()">
+            Crear nueva
+          </button>
         }
       </div>
 
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4" novalidate>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4 min-w-0" novalidate>
         <!-- Nombre -->
-        <div>
+        <div class="min-w-0">
           <label class="block text-sm text-slate-300 mb-1">Nombre *</label>
-          <input
-            type="text"
-            formControlName="nombreCategoria"
-            placeholder="Ej. Comida, Transporte…"
-            class="w-full rounded-lg border px-3 py-2 outline-none bg-slate-900/40 text-slate-100 placeholder-slate-500 border-white/10 focus:ring-2 focus:ring-emerald-400"
-            [class.border-rose-400]="
-              form.controls.nombreCategoria.invalid &&
-              (form.controls.nombreCategoria.dirty || form.controls.nombreCategoria.touched)
-            "
-          />
-          @if (form.controls.nombreCategoria.invalid && (form.controls.nombreCategoria.dirty ||
-          form.controls.nombreCategoria.touched)) {
-          <p class="mt-1 text-xs text-rose-400">Ingresa al menos 2 caracteres.</p>
+          <input type="text"
+                 formControlName="nombreCategoria"
+                 placeholder="Ej. Comida, Transporte…"
+                 class="w-full rounded-lg border px-3 py-2 outline-none bg-slate-900/40 text-slate-100 placeholder-slate-500 border-white/10 focus:ring-2 focus:ring-emerald-400
+                        min-w-0"
+                 [class.border-rose-400]="f.nombreCategoria.invalid && (f.nombreCategoria.dirty || f.nombreCategoria.touched)"/>
+          @if (f.nombreCategoria.invalid && (f.nombreCategoria.dirty || f.nombreCategoria.touched)) {
+            <p class="mt-1 text-xs text-rose-400">Ingresa al menos 2 caracteres.</p>
           }
         </div>
 
@@ -79,40 +63,28 @@
         <div>
           <label class="block text-sm text-slate-300 mb-1">Tipo *</label>
           <div class="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              class="px-3 py-2 rounded-lg border cursor-pointer transition focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/50"
-              [class]="segBtnClass(form.controls.tipoCategoria.value === 0)"
-              [attr.aria-pressed]="form.controls.tipoCategoria.value === 0"
-              (click)="setTipo(0)"
-            >
+            <button type="button"
+                    class="px-3 py-2 rounded-lg border cursor-pointer transition focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/50"
+                    [class]="segBtnClass(f.tipoCategoria.value === 0)"
+                    [attr.aria-pressed]="f.tipoCategoria.value === 0"
+                    (click)="setTipo(0)">
               <span class="inline-flex items-center gap-2">
-                <span
-                  class="h-1.5 w-1.5 rounded-full"
-                  [class]="segBtnClassIn(form.controls.tipoCategoria.value === 0)"
-                ></span>
+                <span class="h-1.5 w-1.5 rounded-full"
+                      [class]="segBtnClassIn(f.tipoCategoria.value === 0)"></span>
                 Gasto
               </span>
             </button>
 
-            <button
-              type="button"
-              class="px-3 py-2 rounded-lg border cursor-pointer transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50"
-              [ngClass]="
-                form.controls.tipoCategoria.value === 1
-                  ? 'bg-emerald-600 text-white border-emerald-600 ring-2 ring-emerald-400/40 shadow-sm'
-                  : 'bg-slate-900/40 text-slate-200 border-white/10 hover:bg-slate-800/60'
-              "
-              [attr.aria-pressed]="form.controls.tipoCategoria.value === 1"
-              (click)="setTipo(1)"
-            >
+            <button type="button"
+                    class="px-3 py-2 rounded-lg border cursor-pointer transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50"
+                    [ngClass]="f.tipoCategoria.value === 1
+                      ? 'bg-emerald-600 text-white border-emerald-600 ring-2 ring-emerald-400/40 shadow-sm'
+                      : 'bg-slate-900/40 text-slate-200 border-white/10 hover:bg-slate-800/60'"
+                    [attr.aria-pressed]="f.tipoCategoria.value === 1"
+                    (click)="setTipo(1)">
               <span class="inline-flex items-center gap-2">
-                <span
-                  class="h-1.5 w-1.5 rounded-full"
-                  [ngClass]="
-                    form.controls.tipoCategoria.value === 1 ? 'bg-white' : 'bg-emerald-400/60'
-                  "
-                ></span>
+                <span class="h-1.5 w-1.5 rounded-full"
+                      [ngClass]="f.tipoCategoria.value === 1 ? 'bg-white' : 'bg-emerald-400/60'"></span>
                 Ingreso
               </span>
             </button>
@@ -120,28 +92,22 @@
         </div>
 
         <!-- Color -->
-        <div>
+        <div class="min-w-0">
           <label class="block text-sm text-slate-300 mb-1">Color</label>
-          <div class="flex items-center gap-3">
-            <input
-              type="color"
-              formControlName="colorHexadecimal"
-              class="h-10 w-12 p-1 rounded-md bg-transparent border border-white/10 cursor-pointer"
-            />
-            <input
-              type="text"
-              [value]="form.controls.colorHexadecimal.value"
-              (input)="onColorHexChange($any($event.target).value)"
-              class="w-28 rounded-lg border px-3 py-2 outline-none bg-slate-900/40 text-slate-100 placeholder-slate-500 border-white/10 focus:ring-2 focus:ring-emerald-400"
-              placeholder="#22C55E"
-              maxlength="7"
-            />
-            <button
-              type="button"
-              class="px-2.5 py-2 rounded-lg border border-white/10 text-slate-200 hover:bg-slate-800/60 cursor-pointer"
-              title="Color aleatorio"
-              (click)="randomColor()"
-            >
+          <div class="flex flex-wrap items-center gap-3 min-w-0">
+            <input type="color"
+                   formControlName="colorHexadecimal"
+                   class="h-10 w-12 p-1 rounded-md bg-transparent border border-white/10 cursor-pointer shrink-0"/>
+            <!-- el hex se adapta: ocupa el espacio disponible sin empujar el card -->
+            <input type="text"
+                   [value]="f.colorHexadecimal.value"
+                   (input)="onColorHexChange($any($event.target).value)"
+                   class="flex-1 min-w-0 rounded-lg border px-3 py-2 outline-none bg-slate-900/40 text-slate-100 placeholder-slate-500 border-white/10 focus:ring-2 focus:ring-emerald-400"
+                   placeholder="#22C55E" maxlength="7"/>
+            <button type="button"
+                    class="px-2.5 py-2 rounded-lg border border-white/10 text-slate-200 hover:bg-slate-800/60 cursor-pointer shrink-0"
+                    title="Color aleatorio"
+                    (click)="randomColor()">
               Aleatorio
             </button>
           </div>
@@ -149,189 +115,170 @@
 
         <!-- Acciones -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-end gap-2 pt-2">
-          <button
-            type="button"
-            class="px-4 py-2 rounded-lg border cursor-pointer bg-slate-900/40 text-slate-200 border-white/10 hover:bg-slate-800/60"
-            (click)="limpiar()"
-            [disabled]="cargando()"
-          >
+          <button type="button"
+                  class="px-4 py-2 rounded-lg border cursor-pointer bg-slate-900/40 text-slate-200 border-white/10 hover:bg-slate-800/60"
+                  (click)="limpiar()" [disabled]="cargando()">
             Limpiar
           </button>
-          <button
-            type="submit"
-            class="px-4 py-2 rounded-lg text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed bg-emerald-600 hover:bg-emerald-700"
-            [disabled]="cargando()"
-          >
+          <button type="submit"
+                  class="px-4 py-2 rounded-lg text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed bg-emerald-600 hover:bg-emerald-700"
+                  [disabled]="cargando()">
             {{ cargando() ? 'Guardando…' : editando() ? 'Actualizar' : 'Guardar' }}
           </button>
         </div>
       </form>
     </div>
 
-    <!-- Listado -->
-    <div class="lg:col-span-2 rounded-2xl p-5 border bg-slate-900/60 border-white/10">
-      <!-- Filtros / búsqueda -->
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div class="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            class="px-3 py-1.5 rounded-full text-xs border cursor-pointer bg-slate-900/40 text-slate-300 border-white/10 hover:bg-slate-800/60"
-            [ngClass]="{ 'bg-emerald-600 text-white border-emerald-600': filtroTipo() === 'todas' }"
-            (click)="setFiltro('todas')"
-          >
-            Todas
-          </button>
+<!-- ==================== Listado ==================== -->
+<div class="lg:col-span-2 rounded-2xl p-5 border bg-slate-900/60 border-white/10 min-w-0">
+  <!-- Filtros / búsqueda -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div class="flex flex-wrap items-center gap-2">
+      <button type="button"
+              class="px-3 py-1.5 rounded-full text-xs border cursor-pointer bg-slate-900/40 text-slate-300 border-white/10 hover:bg-slate-800/60"
+              [ngClass]="{ 'bg-emerald-600 text-white border-emerald-600': filtroTipo() === 'todas' }"
+              (click)="setFiltro('todas')">Todas</button>
+      <button type="button"
+              class="px-3 py-1.5 rounded-full text-xs border cursor-pointer bg-slate-900/40 text-slate-300 border-white/10 hover:bg-slate-800/60"
+              [ngClass]="{ 'bg-rose-600 text-white border-rose-600': filtroTipo() === 'gasto' }"
+              (click)="setFiltro('gasto')">Gastos</button>
+      <button type="button"
+              class="px-3 py-1.5 rounded-full text-xs border cursor-pointer bg-slate-900/40 text-slate-300 border-white/10 hover:bg-slate-800/60"
+              [ngClass]="{ 'bg-emerald-600 text-white border-emerald-600': filtroTipo() === 'ingreso' }"
+              (click)="setFiltro('ingreso')">Ingresos</button>
+      <button type="button"
+              class="px-3 py-1.5 rounded-full text-xs border cursor-pointer bg-slate-900/40 text-slate-300 border-white/10 hover:bg-slate-800/60"
+              [ngClass]="{ 'bg-slate-700 text-white border-slate-700': filtroTipo() === 'inactivas' }"
+              (click)="setFiltro('inactivas')">Inactivas</button>
+    </div>
 
-          <button
-            type="button"
-            class="px-3 py-1.5 rounded-full text-xs border cursor-pointer bg-slate-900/40 text-slate-300 border-white/10 hover:bg-slate-800/60"
-            [ngClass]="{ 'bg-rose-600 text-white border-rose-600': filtroTipo() === 'gasto' }"
-            (click)="setFiltro('gasto')"
-          >
-            Gastos
-          </button>
-
-          <button
-            type="button"
-            class="px-3 py-1.5 rounded-full text-xs border cursor-pointer bg-slate-900/40 text-slate-300 border-white/10 hover:bg-slate-800/60"
-            [ngClass]="{
-              'bg-emerald-600 text-white border-emerald-600': filtroTipo() === 'ingreso'
-            }"
-            (click)="setFiltro('ingreso')"
-          >
-            Ingresos
-          </button>
-
-          <button
-            type="button"
-            class="px-3 py-1.5 rounded-full text-xs border cursor-pointer bg-slate-900/40 text-slate-300 border-white/10 hover:bg-slate-800/60"
-            [ngClass]="{ 'bg-slate-700 text-white border-slate-700': filtroTipo() === 'inactivas' }"
-            (click)="setFiltro('inactivas')"
-          >
-            Inactivas
-          </button>
-        </div>
-
-        <div class="relative w-full sm:w-72">
-          <input
-            type="text"
-            placeholder="Buscar…"
-            class="w-full pl-8 pr-20 py-2 rounded-lg border outline-none bg-slate-900/40 text-slate-100 placeholder-slate-500 border-white/10 focus:ring-2 focus:ring-emerald-400"
-            [formControl]="buscarCtrl"
-            (keyup.enter)="buscarAhora()"
-          />
-          <svg
-            class="h-4 w-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-4.35-4.35M10 18a8 8 0 110-16 8 8 0 010 16z"
-            />
-          </svg>
-          <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
-            <button
-              type="button"
-              class="px-2 py-1 rounded-md border border-white/10 text-xs text-slate-300 hover:bg-slate-800/60 cursor-pointer"
-              (click)="buscarAhora()"
-            >
-              Buscar
-            </button>
-            <button
-              type="button"
-              class="px-2 py-1 rounded-md border border-white/10 text-xs text-slate-300 hover:bg-slate-800/60 cursor-pointer"
-              (click)="buscarCtrl.setValue('')"
-            >
-              Limpiar
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tabla -->
-      <div class="mt-4 overflow-x-auto">
-        <table class="w-full min-w-[560px] text-sm">
-          <thead class="text-slate-400">
-            <tr class="border-b border-white/10">
-              <th class="py-2 text-left">Nombre</th>
-              <th class="py-2 text-left">Tipo</th>
-              <th class="py-2 text-left">Color</th>
-              <th class="py-2 text-left">Estado</th>
-              <th class="py-2 text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @if (!listaFiltrada().length) {
-            <tr>
-              <td class="py-4 text-slate-400" colspan="5">No hay categorías.</td>
-            </tr>
-            } @else { @for (c of listaFiltrada(); track c.idCategoria) {
-            <tr class="border-b border-white/5 hover:bg-slate-800/40">
-              <td class="py-2">
-                <div class="flex items-center gap-2">
-                  <span
-                    class="h-3 w-3 rounded-sm border border-white/10"
-                    [ngStyle]="{ 'background-color': c.colorHexadecimal || '#22C55E' }"
-                  ></span>
-                  <span class="text-slate-100">{{ c.nombreCategoria }}</span>
-                </div>
-              </td>
-              <td class="py-2">
-                <span
-                  class="px-2 py-0.5 rounded-full border text-xs"
-                  [ngClass]="{
-                    'border-rose-500/40 text-rose-300': c.tipoCategoria === 0,
-                    'border-emerald-500/40 text-emerald-300': c.tipoCategoria === 1
-                  }"
-                >
-                  {{ c.tipoCategoria === 0 ? 'Gasto' : 'Ingreso' }}
-                </span>
-              </td>
-              <td class="py-2 text-slate-300">
-                {{ (c.colorHexadecimal || '').toUpperCase() }}
-              </td>
-              <td class="py-2">
-                <span
-                  class="px-2 py-0.5 rounded-full border text-xs"
-                  [ngClass]="{
-                    'border-emerald-500/40 text-emerald-300': (c.estatus ?? 'A') === 'A',
-                    'border-slate-500/40 text-slate-300': (c.estatus ?? 'A') === 'I'
-                  }"
-                >
-                  {{ (c.estatus ?? 'A') === 'A' ? 'Activa' : 'Inactiva' }}
-                </span>
-              </td>
-              <td class="py-2 text-right">
-                <div class="inline-flex items-center gap-1 shrink-0">
-                  <button
-                    type="button"
-                    class="px-2 py-1 rounded-md border border-white/10 text-slate-200 hover:bg-slate-800/60 cursor-pointer"
-                    (click)="editar(c)"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    type="button"
-                    class="px-2 py-1 rounded-md border text-slate-200 cursor-pointer hover:bg-slate-800/60"
-                    [ngClass]="{
-                      'border-slate-600': (c.estatus ?? 'A') === 'A',
-                      'border-emerald-600': (c.estatus ?? 'A') === 'I'
-                    }"
-                    (click)="toggleEstatus(c)"
-                  >
-                    {{ (c.estatus ?? 'A') === 'A' ? 'Desactivar' : 'Activar' }}
-                  </button>
-                </div>
-              </td>
-            </tr>
-            } }
-          </tbody>
-        </table>
+    <div class="relative w-full sm:w-72">
+      <input type="text" placeholder="Buscar…"
+             class="w-full pl-8 pr-20 py-2 rounded-lg border outline-none bg-slate-900/40 text-slate-100 placeholder-slate-500 border-white/10 focus:ring-2 focus:ring-emerald-400"
+             [formControl]="buscarCtrl" (keyup.enter)="buscarAhora()" />
+      <svg class="h-4 w-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10 18a8 8 0 110-16 8 8 0 010 16z"/>
+      </svg>
+      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+        <button type="button"
+                class="px-2 py-1 rounded-md border border-white/10 text-xs text-slate-300 hover:bg-slate-800/60 cursor-pointer"
+                (click)="buscarAhora()">Buscar</button>
+        <button type="button"
+                class="px-2 py-1 rounded-md border border-white/10 text-xs text-slate-300 hover:bg-slate-800/60 cursor-pointer"
+                (click)="buscarCtrl.setValue('')">Limpiar</button>
       </div>
     </div>
+  </div>
+
+  <!-- ===== Listado MÓVIL (cards) ===== -->
+  <div class="mt-4 space-y-2 sm:hidden">
+    @if (!listaFiltrada().length) {
+      <div class="text-slate-400 text-sm">No hay categorías.</div>
+    } @else { @for (c of listaFiltrada(); track c.idCategoria) {
+      <div class="rounded-xl border border-white/10 bg-slate-900/40 p-3 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="h-3 w-3 rounded-sm border border-white/10 shrink-0"
+                  [ngStyle]="{ 'background-color': c.colorHexadecimal || '#22C55E' }"></span>
+            <span class="text-slate-100 font-medium truncate">{{ c.nombreCategoria }}</span>
+          </div>
+          <div class="mt-1 text-[11px] flex items-center gap-2 flex-wrap">
+            <span class="px-2 py-0.5 rounded-full border"
+                  [ngClass]="{ 'border-rose-500/40 text-rose-300': c.tipoCategoria === 0,
+                               'border-emerald-500/40 text-emerald-300': c.tipoCategoria === 1 }">
+              {{ c.tipoCategoria === 0 ? 'Gasto' : 'Ingreso' }}
+            </span>
+            <span class="px-2 py-0.5 rounded-full border"
+                  [ngClass]="{ 'border-emerald-500/40 text-emerald-300': (c.estatus ?? 'A') === 'A',
+                               'border-slate-500/40 text-slate-300': (c.estatus ?? 'A') === 'I' }">
+              {{ (c.estatus ?? 'A') === 'A' ? 'Activa' : 'Inactiva' }}
+            </span>
+            <span class="text-slate-400">{{ (c.colorHexadecimal || '').toUpperCase() }}</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1 shrink-0">
+          <button type="button"
+                  class="px-2 py-1 text-xs rounded-md border border-white/10 text-slate-200 hover:bg-slate-800/60 cursor-pointer"
+                  (click)="editar(c)">Editar</button>
+          <button type="button"
+                  class="px-2 py-1 text-xs rounded-md border text-slate-200 cursor-pointer hover:bg-slate-800/60"
+                  [ngClass]="{ 'border-slate-600': (c.estatus ?? 'A') === 'A',
+                               'border-emerald-600': (c.estatus ?? 'A') === 'I' }"
+                  (click)="toggleEstatus(c)">
+            {{ (c.estatus ?? 'A') === 'A' ? 'Desactivar' : 'Activar' }}
+          </button>
+        </div>
+      </div>
+    } }
+  </div>
+
+  <!-- ===== Tabla DESKTOP (sm+) ===== -->
+  <div class="mt-4 overflow-x-auto hidden sm:block">
+    <table class="w-full text-sm">
+      <colgroup>
+        <col class="sm:w-[42%] md:w-[45%]">
+        <col class="sm:w-[14%] md:w-[15%]">
+        <col class="sm:w-[18%] md:w-[20%]">
+        <col class="sm:w-[10%]">
+        <col class="sm:w-[16%] md:w-[10%]">
+      </colgroup>
+      <thead class="text-slate-400">
+        <tr class="border-b border-white/10">
+          <th class="py-2 text-left">Nombre</th>
+          <th class="py-2 text-left">Tipo</th>
+          <th class="py-2 text-left">Color</th>
+          <th class="py-2 text-left">Estado</th>
+          <th class="py-2 text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (!listaFiltrada().length) {
+          <tr><td class="py-4 text-slate-400" colspan="5">No hay categorías.</td></tr>
+        } @else { @for (c of listaFiltrada(); track c.idCategoria) {
+          <tr class="border-b border-white/5 hover:bg-slate-800/40">
+            <td class="py-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="h-3 w-3 rounded-sm border border-white/10 shrink-0"
+                      [ngStyle]="{ 'background-color': c.colorHexadecimal || '#22C55E' }"></span>
+                <span class="text-slate-100 truncate block min-w-0">{{ c.nombreCategoria }}</span>
+              </div>
+            </td>
+            <td class="py-2">
+              <span class="px-2 py-0.5 rounded-full border text-xs"
+                    [ngClass]="{ 'border-rose-500/40 text-rose-300': c.tipoCategoria === 0,
+                                 'border-emerald-500/40 text-emerald-300': c.tipoCategoria === 1 }">
+                {{ c.tipoCategoria === 0 ? 'Gasto' : 'Ingreso' }}
+              </span>
+            </td>
+            <td class="py-2 text-slate-300 truncate">{{ (c.colorHexadecimal || '').toUpperCase() }}</td>
+            <td class="py-2">
+              <span class="px-2 py-0.5 rounded-full border text-xs"
+                    [ngClass]="{ 'border-emerald-500/40 text-emerald-300': (c.estatus ?? 'A') === 'A',
+                                 'border-slate-500/40 text-slate-300': (c.estatus ?? 'A') === 'I' }">
+                {{ (c.estatus ?? 'A') === 'A' ? 'Activa' : 'Inactiva' }}
+              </span>
+            </td>
+            <td class="py-2 text-right">
+              <div class="inline-flex items-center gap-1 shrink-0">
+                <button type="button"
+                        class="px-2 py-1 rounded-md border border-white/10 text-slate-200 hover:bg-slate-800/60 cursor-pointer"
+                        (click)="editar(c)">Editar</button>
+                <button type="button"
+                        class="px-2 py-1 rounded-md border text-slate-200 cursor-pointer hover:bg-slate-800/60"
+                        [ngClass]="{ 'border-slate-600': (c.estatus ?? 'A') === 'A',
+                                     'border-emerald-600': (c.estatus ?? 'A') === 'I' }"
+                        (click)="toggleEstatus(c)">
+                  {{ (c.estatus ?? 'A') === 'A' ? 'Desactivar' : 'Activar' }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        } }
+      </tbody>
+    </table>
+  </div>
+</div>
+
   </div>
 </div>

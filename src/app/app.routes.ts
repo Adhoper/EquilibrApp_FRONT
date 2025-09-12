@@ -48,6 +48,10 @@ export const routes: Routes = [
         path: 'saldos',
         loadComponent: () => import('./pages/saldos-periodo/saldos-periodo').then((c) => c.SaldosPeriodo)
       },
+      {
+        path: 'perfil',
+        loadComponent: () => import('./pages/perfil/perfil').then((c) => c.Perfil)
+      },
       { path: '**', redirectTo: 'dashboard' },
     ],
   },

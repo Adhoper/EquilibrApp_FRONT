@@ -2,6 +2,7 @@
   <!-- Sidebar fijo (DESKTOP) -->
   <aside class="hidden md:block w-64 shrink-0">
     <div class="sticky top-0 h-dvh min-h-0 bg-slate-950 border-r border-slate-800/60">
+      <!-- En desktop no necesitamos escuchar navigate -->
       <app-sidebar class="h-full"></app-sidebar>
     </div>
   </aside>
@@ -17,7 +18,8 @@
       [class.-translate-x-full]="!sidebarVisible"
       [class.translate-x-0]="sidebarVisible">
       <div class="h-dvh min-h-0">
-        <app-sidebar class="h-full"></app-sidebar>
+        <!-- ⬇️ Al navegar desde el sidebar móvil, cerramos -->
+        <app-sidebar class="h-full" (navigate)="onSidebarNavigate()"></app-sidebar>
       </div>
     </aside>
 
@@ -27,7 +29,7 @@
     }
 
     <!-- Contenido (solo aquí hay scroll) -->
-    <main class="h-[calc(100vh-4rem)] overflow-y-auto">
+    <main id="app-main-scroll" class="h-[calc(100vh-4rem)] overflow-y-auto">
       <div class="px-4 md:px-8 py-6">
         <div
           class="rounded-3xl border border-white/10 bg-slate-900/60 backdrop-blur-md p-6

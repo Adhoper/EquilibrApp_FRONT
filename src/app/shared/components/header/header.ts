@@ -1,6 +1,5 @@
-// src/app/shared/header/header.ts
 import { Component, EventEmitter, HostListener, Input, Output, inject, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { AuthService } from '../../../services/AuthService.service';
@@ -10,7 +9,7 @@ import { ToastService } from '../../../services/toast.service';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
@@ -37,13 +36,8 @@ export class Header implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (!this.idUsuario) return;
     const periodo = this.periodoActual();
-
-    // 1) Contexto + hidratar desde localStorage (N y L, excluye D)
     this.alertaSrv.hydrate(this.idUsuario, periodo);
-
-    // 2) Sincronizar con backend (listar-alertas => N y L)
     this.cargarAlertasActual();
-
     document.addEventListener('click', this._docClickClose);
   }
   ngOnDestroy(): void {
@@ -51,15 +45,13 @@ export class Header implements OnInit, OnDestroy {
   }
   private _docClickClose = () => { this.menuOpen = false; this.notifOpen = false; };
 
-  // === helpers ===
   initials(name: string) {
-    return (name || 'EA').split(' ').filter(Boolean).slice(0, 2).map(p => p[0]?.toUpperCase()).join('');
+    return (name || 'EA').split(' ').filter(Boolean).slice(0,2).map(p => p[0]?.toUpperCase()).join('');
   }
   private periodoActual(): string {
     const d = new Date(); const mm = `${d.getMonth()+1}`.padStart(2,'0'); return `${d.getFullYear()}-${mm}`;
   }
 
-  // === UI ===
   onToggleMenu(ev: MouseEvent) {
     ev.stopPropagation();
     this.menuOpen = !this.menuOpen;
@@ -70,7 +62,6 @@ export class Header implements OnInit, OnDestroy {
     const next = !this.notifOpen;
     this.notifOpen = next;
     this.menuOpen = false;
-    // refrescamos al abrir el panel para traer cambios del server
     if (next) this.cargarAlertasActual();
   }
   toggleSidebar() { this.abrirSidebar.emit(); }
@@ -78,17 +69,12 @@ export class Header implements OnInit, OnDestroy {
 
   @HostListener('document:click') closeOnOutsideClick() { this.menuOpen = false; this.notifOpen = false; }
 
-  // === backend alertas ===
   private cargarAlertasActual() {
     if (!this.idUsuario) return;
     const periodo = this.periodoActual();
-
-    // define contexto para clave de storage y persiste tras set
     this.alertaSrv.setContext(this.idUsuario, periodo);
-
-    // SIN 'estado' => backend debe devolver N y L (excluye D)
     this.alertaSrv.refrescar(this.idUsuario, periodo).subscribe({
-      next: (r:any) => this.alertaSrv.setFromResponse(r) // set + persist
+      next: (r:any) => this.alertaSrv.setFromResponse(r)
     });
   }
 
@@ -96,7 +82,7 @@ export class Header implements OnInit, OnDestroy {
     this.alertaSrv.marcarLeida(a.idAlerta, this.idUsuario).subscribe({
       next: (res:any) => {
         this.alertas.update(list => list.map(x => x.idAlerta===a.idAlerta ? { ...x, estado:'L' } : x));
-        this.alertaSrv.persistCurrent(); // << persistir cambio
+        this.alertaSrv.persistCurrent();
         this.toast.show(res?.message || 'Alerta marcada como leída', 'info');
       }
     });
@@ -107,7 +93,7 @@ export class Header implements OnInit, OnDestroy {
     this.alertaSrv.marcarTodas(this.idUsuario, periodo).subscribe({
       next: (res:any) => {
         this.alertas.update(list => list.map(x => x.estado==='N' ? { ...x, estado:'L' } : x));
-        this.alertaSrv.persistCurrent(); // << persistir cambio
+        this.alertaSrv.persistCurrent();
         this.toast.show(res?.message || 'Alertas marcadas como leídas', 'info');
       }
     });
@@ -117,7 +103,7 @@ export class Header implements OnInit, OnDestroy {
     this.alertaSrv.descartar(a.idAlerta, this.idUsuario).subscribe({
       next: (res:any) => {
         this.alertas.update(list => list.filter(x => x.idAlerta !== a.idAlerta));
-        this.alertaSrv.persistCurrent(); // << persistir cambio
+        this.alertaSrv.persistCurrent();
         this.toast.show(res?.message || 'Alerta descartada', 'info');
       }
     });
