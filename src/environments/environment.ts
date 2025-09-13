@@ -5,9 +5,9 @@
 export const environment = {
   production: false,
   register_per_page: 10,
-  BASE_API_URL: 'http://localhost:5017/',
+  //BASE_API_URL: 'http://localhost:5017/',
   //BASE_API_URL: 'http://adriancuret-001-site1.mtempurl.com/',
-  //BASE_API_URL: 'https://simuverselabapi20250429125006-ajh9feghadceetfu.canadacentral-01.azurewebsites.net/',
+  BASE_API_URL: 'https://equilibrappback20250912213318-dvbme0b6aghgehfp.canadacentral-01.azurewebsites.net/',
   //LoginRedirect: 'https://mango-plant-02365ef0f.2.azurestaticapps.net/',
 };
 
