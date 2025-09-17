@@ -52,6 +52,10 @@ export const routes: Routes = [
         path: 'perfil',
         loadComponent: () => import('./pages/perfil/perfil').then((c) => c.Perfil)
       },
+      {
+        path: 'guia',
+        loadComponent: () => import('./pages/guia/guia').then((c) => c.Guia)
+      },
       { path: '**', redirectTo: 'dashboard' },
     ],
   },

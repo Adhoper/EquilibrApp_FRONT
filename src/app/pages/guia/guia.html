@@ -1,0 +1,176 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-400/30 grid place-items-center">
+        <span class="text-emerald-300 font-semibold text-lg">?</span>
+      </div>
+      <div>
+        <h2 class="text-xl font-semibold text-slate-100">Guía de uso</h2>
+        <div class="text-xs text-slate-400">Aprende a sacarle provecho a EquilibrApp</div>
+      </div>
+    </div>
+
+    <a routerLink="/dashboard" class="text-sm text-emerald-400 hover:underline cursor-pointer">Volver al dashboard</a>
+  </div>
+
+  <!-- Contenido con índice lateral -->
+  <div class="grid lg:grid-cols-12 gap-6">
+    <!-- Índice (sticky en desktop) -->
+    <aside class="lg:col-span-3 rounded-2xl p-4 border bg-slate-900/60 border-white/10 h-max lg:sticky lg:top-20">
+      <div class="text-sm font-medium text-slate-200 mb-2">Contenido</div>
+      <nav class="space-y-1">
+        @for (s of sections; track s.id) {
+          <button type="button"
+                  class="w-full text-left px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 cursor-pointer"
+                  (click)="scrollTo(s.id)">
+            {{ s.title }}
+          </button>
+        }
+      </nav>
+      <!-- <div class="mt-4 text-xs text-slate-500">
+        ¿Dudas? Escríbenos desde el menú de usuario &rarr; Perfil.
+      </div> -->
+    </aside>
+
+    <!-- Cuerpo -->
+<main class="lg:col-span-9 space-y-8">
+  <!-- Inicio rápido -->
+  <section id="inicio-rapido" class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+    <h3 class="text-lg font-semibold text-slate-100 mb-2">Inicio rápido</h3>
+    <ol class="list-decimal ml-5 space-y-1 text-slate-300">
+      <li>Ve a <b>Cuentas</b> y crea al menos una (con el <i>saldo con el que empiezas</i> este mes).</li>
+      <li>Ve a <b>Categorías</b> y arma tus etiquetas de <i>Gasto</i> e <i>Ingreso</i>.</li>
+      <li>En <b>Presupuestos</b>, define límites para no pasarte.</li>
+      <li>Registra tus movimientos en <b>Transacciones</b>.</li>
+      <li>Mira el <b>Dashboard</b> y los <b>Reportes</b> para ver cómo vas.</li>
+    </ol>
+    <div class="mt-3 text-sm text-slate-400">
+      Todo se ordena por <u>mes</u>. Cambia de mes desde la parte superior de cada módulo.
+    </div>
+  </section>
+
+  <!-- Conceptos clave -->
+  <section id="conceptos" class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+    <h3 class="text-lg font-semibold text-slate-100 mb-2">Conceptos clave</h3>
+    <ul class="space-y-2 text-slate-300">
+      <li><b>Cuentas:</b> Dónde está tu dinero (efectivo, banco). El <i>saldo inicial</i> se mantiene entre meses.</li>
+      <li><b>Categorías:</b> Etiquetas para clasificar (Comida, Transporte, Sueldo…).</li>
+      <li><b>Transacciones:</b> Registros de gastos e ingresos con fecha y nota.</li>
+      <li><b>Presupuestos:</b> Límites por categoría (y global) para controlar el gasto.</li>
+      <li><b>Períodos:</b> Cada mes empieza “en limpio” (transacciones y presupuestos nuevos). Tus cuentas siguen iguales.</li>
+    </ul>
+  </section>
+
+  <!-- Flujo recomendado -->
+  <section id="flujo" class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+    <h3 class="text-lg font-semibold text-slate-100 mb-2">Cómo usar la app (paso a paso)</h3>
+    <div class="grid sm:grid-cols-2 gap-4 text-slate-300">
+      <div class="rounded-xl bg-slate-950/60 border border-white/10 p-4">
+        <div class="font-medium text-slate-200 mb-1">1) Configura</div>
+        <ul class="list-disc ml-5 space-y-1">
+          <li>Crea tus <a routerLink="/cuentas" class="text-emerald-400 hover:underline">Cuentas</a>.</li>
+          <li>Arma tus <a routerLink="/categorias" class="text-emerald-400 hover:underline">Categorías</a>.</li>
+          <li>Define <a routerLink="/presupuestos" class="text-emerald-400 hover:underline">Presupuestos</a> (si quieres).</li>
+        </ul>
+      </div>
+      <div class="rounded-xl bg-slate-950/60 border border-white/10 p-4">
+        <div class="font-medium text-slate-200 mb-1">2) Día a día</div>
+        <ul class="list-disc ml-5 space-y-1">
+          <li>Registra <a routerLink="/transacciones" class="text-emerald-400 hover:underline">Transacciones</a> (gastos/ingresos).</li>
+          <li>Revisa alertas de presupuesto si te acercas al límite.</li>
+          <li>Consulta el <a routerLink="/dashboard" class="text-emerald-400 hover:underline">Dashboard</a>.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Transacciones -->
+  <section id="transacciones" class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+    <h3 class="text-lg font-semibold text-slate-100 mb-2">Transacciones (gastos e ingresos)</h3>
+    <ul class="space-y-2 text-slate-300">
+      <li>Elige si es <i>Gasto</i> o <i>Ingreso</i>, selecciona cuenta y categoría, escribe el monto y la fecha.</li>
+      <li>Pon una nota breve para recordar qué fue.</li>
+      <li>Usa el buscador para encontrar movimientos rápidamente.</li>
+      <li>Puedes editar o desactivar una transacción si te equivocaste.</li>
+    </ul>
+  </section>
+
+  <!-- Presupuestos y alertas -->
+  <section id="presupuestos" class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+    <h3 class="text-lg font-semibold text-slate-100 mb-2">Presupuestos y alertas</h3>
+    <p class="text-slate-300">
+      Coloca un límite de gasto por categoría (y uno global) para el mes.
+      Cuando alcanzas el 75%, 90% o 100%, verás avisos para ayudarte a no pasarte.
+    </p>
+  </section>
+
+  <!-- Reportes -->
+  <section id="reportes" class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+    <h3 class="text-lg font-semibold text-slate-100 mb-2">Reportes</h3>
+    <ul class="space-y-2 text-slate-300">
+      <li><b>Resumen por categoría:</b> Muestra en qué se fue el dinero del mes.</li>
+      <li><b>Saldos por período:</b> Cómo cambió el saldo de cada cuenta durante el mes.</li>
+      <li class="text-slate-400 text-sm">Cambia de mes para comparar.</li>
+    </ul>
+  </section>
+
+  <!-- Ajustes de saldo -->
+  <section id="ajustes-saldo" class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+    <h3 class="text-lg font-semibold text-slate-100 mb-2">Si el saldo no coincide</h3>
+    <p class="text-slate-300">
+      ¿Tu saldo en la app no coincide con el banco o con el efectivo real?
+      Registra una <b>Transacción de “Ajuste de saldo”</b> con la diferencia:
+      si falta dinero, es un <i>Ingreso</i>; si sobra, es un <i>Gasto</i>.
+      Así no cambias meses anteriores ni dañas tus reportes.
+    </p>
+  </section>
+
+  <!-- Perfil -->
+  <section id="perfil" class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+    <h3 class="text-lg font-semibold text-slate-100 mb-2">Perfil y seguridad</h3>
+    <ul class="space-y-2 text-slate-300">
+      <li>Puedes cambiar tu <b>nombre</b>.</li>
+      <li>Puedes cambiar tu <b>contraseña</b> (escribe la actual, luego la nueva y confírmala).</li>
+      <li>Al guardar, la app te pedirá volver a iniciar sesión para que todo se actualice bien.</li>
+    </ul>
+    <div class="mt-3">
+      <a routerLink="/perfil" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/60 hover:bg-slate-800 text-slate-200 border border-white/10 cursor-pointer">
+        Ir a Perfil
+      </a>
+    </div>
+  </section>
+
+  <!-- Tips -->
+  <section id="tips" class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+    <h3 class="text-lg font-semibold text-slate-100 mb-2">Tips rápidos</h3>
+    <ul class="space-y-2 text-slate-300">
+      <li>En el celular, las tablas se pueden deslizar hacia los lados.</li>
+      <li>Si te equivocas, puedes editar o desactivar registros.</li>
+      <li>Los colores de categorías te ayudan a identificar rápido.</li>
+      <!-- <li>En Login y Registro, el email que uses queda guardado como sugerencia para la próxima.</li> -->
+    </ul>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="rounded-2xl p-5 border bg-slate-900/60 border-white/10">
+    <h3 class="text-lg font-semibold text-slate-100 mb-2">Preguntas frecuentes</h3>
+    <div class="space-y-3 text-slate-300">
+      <div>
+        <div class="font-medium text-slate-200">Cambié de mes y veo todo en cero</div>
+        <div>Es normal si todavía no tienes movimientos ese mes. Las cuentas y su saldo inicial se mantienen.</div>
+      </div>
+      <div>
+        <div class="font-medium text-slate-200">Mi saldo no coincide</div>
+        <div>Haz una transacción de <i>Ajuste de saldo</i> con la diferencia. No cambies el saldo inicial de meses pasados.</div>
+      </div>
+      <div>
+        <div class="font-medium text-slate-200">Olvidé mi contraseña</div>
+        <div>En esta versión no hay recuperación por correo. Si recuerdas la actual, cámbiala en <b>Perfil</b>.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+  </div>
+</div>
