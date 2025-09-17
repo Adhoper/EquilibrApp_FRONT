@@ -34,6 +34,10 @@ export class Sidebar {
     { label: 'Perfil', path: '/perfil', icon: 'user' },
   ];
 
+  ayuda: any[] = [
+    { label: 'Guía', path: '/guia', icon: 'book' },
+  ];
+
   onNav() { this.navigate.emit(); }
 
   svg(name: string) {
@@ -46,6 +50,8 @@ export class Sidebar {
       case 'pie':    return 'M11 3a9 9 0 019 9h-9V3zM4.06 7.05A9 9 0 0011 21v-9H2a9 9 0 012.06-4.95z';
       case 'chart':  return 'M4 19h16M7 16V8m5 8V5m5 11v-6';
       case 'user':   return 'M16 14a4 4 0 10-8 0v3h8v-3zM12 7a3 3 0 110 6 3 3 0 010-6z';
+      // 👇 NUEVO icono libro
+      case 'book':   return 'M4 5a2 2 0 012-2h10a2 2 0 012 2v12a1 1 0 01-1 1H6a2 2 0 00-2 2V5zm2 0v12a3 3 0 013-3h8';
       default:       return 'M12 12h.01';
     }
   }

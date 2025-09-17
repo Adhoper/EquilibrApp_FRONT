@@ -78,7 +78,7 @@
 
         @if (notifOpen) {
         <div
-          class="absolute right-0 mt-2 w-80 max-w-[92vw] z-50 rounded-2xl bg-slate-950/95 text-slate-100 shadow-[0_15px_40px_-10px_rgba(0,0,0,.7)] ring-1 ring-white/10 overflow-hidden"
+          class="fixed inset-x-2 top-16 /* móvil: ancho casi completo y bien pegado al header */ md:absolute md:inset-x-auto /* en md+ volvemos al posicionamiento relativo al botón */ md:right-0 md:top-auto md:mt-2 z-50 rounded-2xl bg-slate-950/95 text-slate-100 shadow-[0_15px_40px_-10px_rgba(0,0,0,.7)] ring-1 ring-white/10 overflow-hidden w-auto md:w-80 /* ancho auto en móvil, 80 en md+ */ max-w-[92vw] /* por si acaso en móvil ultra chico */"
           (click)="$event.stopPropagation()"
           role="menu"
         >
