@@ -1,6 +1,6 @@
 # 🌐 EquilibrApp – Frontend
 
-**EquilibrApp** es una aplicación web para gestionar **gastos e ingresos por períodos**, con una interfaz moderna (header + sidebar) y componentes standalone.
+**EquilibrApp** es una aplicación web para gestionar **gastos e ingresos por períodos**, con una interfaz moderna y componentes standalone.
 
 Permite organizar tus cuentas, transacciones y reportes de manera clara, manteniendo siempre el equilibrio financiero.
 
